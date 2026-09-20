@@ -11,7 +11,7 @@
     {"capability":"public endpoints","source":"none detected","outcome":"none","status":"verified","next_action":"none"},
     {"capability":"callbacks/webhooks/schedules","source":"none detected","outcome":"none","status":"verified","next_action":"none"},
     {"capability":"secrets","source":".env excluded from inspection and import","outcome":"do not copy secrets","status":"safe","next_action":"use managed configuration if backend verification requires it"},
-    {"capability":"fleet interaction","source":"FishingFleet with four premium ship images already present","outcome":"upgrade to requested premium states, routes, menus, crew window, and synchronized visuals","status":"planned","next_action":"implement and verify"},
+    {"capability":"fleet interaction","source":"FishingFleet with four premium ship images already present","outcome":"upgraded to requested premium states, routes, menus, crew window, and synchronized visuals","status":"implemented","next_action":"verify in browser"},
     {"capability":"cutover","source":"Lovable preview","outcome":"not published","status":"pending","next_action":"user publishes when ready"},
     {"capability":"verification","source":"build and browser checks","outcome":"pending","status":"pending","next_action":"test desktop and phone interactions"}
   ]
