@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/ahmedredae8-stack/sea-tales-artistry",
+  "capabilities": [
+    {"capability":"code","source":"public GitHub repository","outcome":"preserve then extend only the requested fleet scene","status":"source inspected","next_action":"copy source excluding .git and .env"},
+    {"capability":"schema","source":"three supplied migrations","outcome":"preserve","status":"detected","next_action":"recreate through Lovable Cloud only if required for preview"},
+    {"capability":"records","source":"no export supplied","outcome":"no existing player records requested","status":"accepted","next_action":"none"},
+    {"capability":"auth identities","source":"user confirmed no real accounts","outcome":"use fresh Lovable authentication when needed","status":"accepted","next_action":"none for fleet UI"},
+    {"capability":"authorization","source":"migration policies and app auth helpers","outcome":"preserve","status":"detected","next_action":"verify after import"},
+    {"capability":"uploaded file bytes","source":"repository images, videos through asset pointers, and audio","outcome":"preserve","status":"detected","next_action":"verify all media loads"},
+    {"capability":"external providers","source":"none requiring credentials detected","outcome":"none","status":"verified","next_action":"none"},
+    {"capability":"public endpoints","source":"none detected","outcome":"none","status":"verified","next_action":"none"},
+    {"capability":"callbacks/webhooks/schedules","source":"none detected","outcome":"none","status":"verified","next_action":"none"},
+    {"capability":"secrets","source":".env excluded from inspection and import","outcome":"do not copy secrets","status":"safe","next_action":"use managed configuration if backend verification requires it"},
+    {"capability":"fleet interaction","source":"FishingFleet with four premium ship images already present","outcome":"upgrade to requested premium states, routes, menus, crew window, and synchronized visuals","status":"planned","next_action":"implement and verify"},
+    {"capability":"cutover","source":"Lovable preview","outcome":"not published","status":"pending","next_action":"user publishes when ready"},
+    {"capability":"verification","source":"build and browser checks","outcome":"pending","status":"pending","next_action":"test desktop and phone interactions"}
+  ]
+}
