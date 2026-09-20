@@ -142,3 +142,1399 @@
     color: var(--color-foreground);
   }
 }
+
+/* ── Island scene design system ───────────────────────────── */
+
+:root {
+  --sky: oklch(0.78 0.12 235);
+  --sea-light: oklch(0.85 0.09 215);
+  --gold: oklch(0.83 0.14 85);
+  --gold-deep: oklch(0.62 0.13 70);
+  --dock-bg: oklch(0.28 0.05 250 / 0.55);
+}
+
+@theme inline {
+  --color-sky: var(--sky);
+}
+
+/* ── Scene stage: video fills any device ─────────────────── */
+.scene-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.scene-stage > video,
+.scene-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ── Invisible but generous map hotspots ─────────────────── */
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 999px;
+}
+
+.hotspot-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 30%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.hotspot:hover .hotspot-ring,
+.hotspot:focus-visible .hotspot-ring {
+  opacity: 0.55;
+}
+
+.hotspot:active .hotspot-ring {
+  opacity: 0.85;
+}
+
+.hotspot-pin,
+.hotspot-label {
+  display: none;
+}
+
+/* ── Top HUD ─────────────────────────────────────────────── */
+.hud-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.hud-frame {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hud-row {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(0.15rem, 1.2vw, 0.6rem);
+  padding-inline: clamp(0.5rem, 3vw, 1.5rem);
+}
+
+.hud-slot {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.hud-ico {
+  height: clamp(0.85rem, 3.4vw, 1.25rem);
+  width: clamp(0.85rem, 3.4vw, 1.25rem);
+  flex: none;
+  object-fit: contain;
+}
+
+.hud-num {
+  font-size: clamp(0.6rem, 2.6vw, 0.9rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: oklch(0.98 0.02 90);
+  text-shadow: 0 1px 3px oklch(0 0 0 / 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-player {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hud-avatar {
+  display: grid;
+  height: clamp(1.5rem, 6.5vw, 2.4rem);
+  width: clamp(1.5rem, 6.5vw, 2.4rem);
+  flex: none;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid var(--gold);
+  background: linear-gradient(160deg, oklch(0.35 0.06 250), oklch(0.18 0.04 255));
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.6);
+}
+
+.hud-initials {
+  font-size: clamp(0.55rem, 2.4vw, 0.85rem);
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.hud-name {
+  max-width: 6.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(0.6rem, 2.4vw, 0.85rem);
+  font-weight: 800;
+  color: oklch(0.98 0.02 90);
+  text-shadow: 0 1px 3px oklch(0 0 0 / 0.85);
+}
+
+/* ── Side controls ───────────────────────────────────────── */
+.ctl-btn {
+  display: grid;
+  height: 2.6rem;
+  width: 2.6rem;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  background: oklch(0.18 0.04 255 / 0.6);
+  color: oklch(0.97 0.02 90);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px oklch(0 0 0 / 0.45);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.ctl-btn:hover {
+  transform: translateY(-2px);
+  background: oklch(0.24 0.05 255 / 0.75);
+}
+
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  background: oklch(0.18 0.04 255 / 0.6);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--gold);
+  backdrop-filter: blur(8px);
+}
+
+/* Bottom dock */
+.dock {
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--dock-bg) 100%, transparent),
+    color-mix(in oklab, var(--dock-bg) 60%, transparent) 60%,
+    transparent
+  );
+  backdrop-filter: blur(8px);
+  border-top: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+}
+
+.dock-btn {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 74px;
+  margin-inline: auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 10px oklch(0.2 0.05 250 / 0.45));
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+  animation: bob 4.5s ease-in-out infinite;
+}
+
+.dock-btn:hover {
+  transform: translateY(-6px) scale(1.06);
+  filter: drop-shadow(0 10px 16px oklch(0.2 0.05 250 / 0.55))
+    drop-shadow(0 0 10px color-mix(in oklab, var(--gold) 60%, transparent));
+}
+
+.dock-btn:active {
+  transform: translateY(-1px) scale(0.96);
+}
+
+/* ── Golden reference dock ───────────────────────────────── */
+.game-dock {
+  position: absolute;
+  z-index: 24;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.6rem 0.55rem max(0.55rem, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, oklch(0.14 0.035 255 / 0.86), oklch(0.18 0.04 250 / 0.52) 62%, transparent);
+  pointer-events: none;
+}
+
+.game-dock ul {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(0.12rem, 1vw, 0.55rem);
+  width: min(100%, 49rem);
+  margin-inline: auto;
+}
+
+.game-dock li { min-width: 0; }
+
+.game-dock-button {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  filter: drop-shadow(0 5px 5px oklch(0.06 0.03 250 / 0.72));
+  transition: transform 160ms ease, filter 160ms ease;
+}
+
+.game-dock-button:hover,
+.game-dock-button:focus-visible {
+  background: transparent;
+  transform: translateY(-5px) scale(1.04);
+  filter: drop-shadow(0 7px 8px oklch(0.06 0.03 250 / 0.8)) drop-shadow(0 0 7px color-mix(in oklab, var(--gold) 55%, transparent));
+}
+
+.game-dock-button img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ── Independent fishing fleet ───────────────────────────── */
+.fleet-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+.fleet-ship {
+  position: absolute;
+  left: var(--ship-x);
+  top: var(--ship-y);
+  width: clamp(8.5rem, 18vw, 16rem);
+  aspect-ratio: 3 / 2;
+  translate: -50% -50%;
+  pointer-events: auto;
+  animation: ship-idle 3.6s ease-in-out var(--ship-delay) infinite;
+}
+.ship-hitbox { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; overflow: visible; background: transparent; }
+.ship-hitbox:hover { background: transparent; }
+.ship-hitbox > img { position: relative; z-index: 2; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 7px 5px oklch(0.08 0.04 235 / 0.7)); user-select: none; }
+.ship-water-shadow { position: absolute; z-index: 1; left: 14%; right: 8%; bottom: 19%; height: 12%; border-radius: 50%; background: oklch(0.16 0.07 225 / 0.52); filter: blur(5px); }
+.fishing-ripple { position: absolute; z-index: 1; left: 0; bottom: 13%; width: 35%; height: 16%; border: 2px solid oklch(0.9 0.08 210 / 0.62); border-radius: 50%; animation: net-ripple 1.8s ease-out infinite; }
+.fleet-ship-sailingOut { animation: sail-out 2.15s ease-in-out forwards; }
+.fleet-ship-casting,
+.fleet-ship-fishing { left: calc(var(--ship-x) + 9%); top: calc(var(--ship-y) - 14%); transform: rotate(-12deg); }
+.fleet-ship-casting { animation: cast-settle 0.95s ease-out; }
+.fleet-ship-fishing { animation: ship-idle 3.2s ease-in-out infinite; }
+.fleet-ship-hauling { left: calc(var(--ship-x) + 9%); top: calc(var(--ship-y) - 14%); transform: rotate(-12deg); animation: haul-net 0.95s ease-in-out; }
+.fleet-ship-sailingHome { animation: sail-home 2.2s ease-in-out forwards; }
+
+.ship-actions { position: absolute; z-index: 10; left: 50%; bottom: 85%; display: flex; gap: 0.3rem; translate: -50% 0; padding: 0.25rem; border: 1px solid color-mix(in oklab, var(--gold) 65%, transparent); border-radius: 0.45rem; background: oklch(0.13 0.04 252 / 0.9); box-shadow: 0 8px 18px oklch(0.05 0.02 250 / 0.7); backdrop-filter: blur(7px); }
+.ship-actions button { width: clamp(2.5rem, 4.8vw, 3.5rem); height: clamp(2.5rem, 4.8vw, 3.5rem); padding: 0.25rem; border: 1px solid color-mix(in oklab, var(--gold) 60%, transparent); background: oklch(0.22 0.045 250); }
+.ship-actions img { width: 100%; height: 100%; object-fit: contain; }
+
+.fleet-modal { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 1rem; background: oklch(0.05 0.02 250 / 0.72); pointer-events: auto; backdrop-filter: blur(5px); }
+.crew-panel, .sell-panel { width: min(100%, 32rem); max-height: min(80svh, 38rem); overflow: auto; border: 2px solid var(--gold-deep); border-radius: 0.5rem; background: linear-gradient(145deg, oklch(0.27 0.055 60), oklch(0.14 0.035 250)); color: oklch(0.97 0.025 90); box-shadow: 0 18px 48px oklch(0.03 0.02 250 / 0.85), inset 0 0 0 2px oklch(0.85 0.12 80 / 0.2); }
+.crew-panel header { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid color-mix(in oklab, var(--gold) 50%, transparent); background: oklch(0.16 0.04 250 / 0.96); }
+.crew-panel h2, .sell-panel h2 { font-size: 1.15rem; font-weight: 900; color: var(--gold); }
+.crew-panel ul { display: grid; gap: 0.45rem; padding: 0.75rem; }
+.crew-panel li { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) auto; align-items: center; gap: 0.65rem; padding: 0.55rem; border: 1px solid oklch(0.78 0.12 75 / 0.35); background: oklch(0.16 0.035 250 / 0.72); }
+.crew-portrait { width: 3.5rem; height: 3.5rem; border: 1px solid var(--gold); border-radius: 0.35rem; }
+.crew-panel li > span { display: grid; min-width: 0; }
+.crew-panel strong { color: var(--gold); }
+.crew-panel small { display: block; font-size: 0.68rem; color: oklch(0.82 0.025 230); }
+.crew-panel li > button { display: grid; height: auto; min-width: 5.2rem; gap: 0; background: linear-gradient(180deg, var(--gold), var(--gold-deep)); color: oklch(0.17 0.04 60); font-weight: 900; }
+.crew-panel li > button small { color: inherit; }
+.sell-panel { display: grid; justify-items: center; gap: 0.65rem; padding: 1.1rem; text-align: center; }
+.sell-panel > img { width: min(90%, 20rem); aspect-ratio: 3 / 2; object-fit: contain; }
+.sell-panel p { max-width: 25rem; font-size: 0.85rem; color: oklch(0.87 0.025 230); }
+.sell-panel > div { display: flex; gap: 0.6rem; }
+
+@keyframes ship-idle { 0%, 100% { translate: -50% -50%; } 50% { translate: -50% calc(-50% - 4px); } }
+@keyframes sail-out { 0% { translate: -50% -50%; transform: rotate(0); } 65% { translate: calc(-50% + 8vw) calc(-50% - 13vh); transform: rotate(-7deg); } 100% { translate: calc(-50% + 9vw) calc(-50% - 14vh); transform: rotate(-12deg); } }
+@keyframes cast-settle { from { opacity: 0.7; scale: 0.96; } to { opacity: 1; scale: 1; } }
+@keyframes haul-net { 0%, 100% { translate: -50% -50%; } 45% { translate: -50% calc(-50% - 7px); } }
+@keyframes sail-home { 0% { left: calc(var(--ship-x) + 9%); top: calc(var(--ship-y) - 14%); translate: -50% -50%; transform: rotate(168deg); } 78% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; transform: rotate(168deg); } 100% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; transform: rotate(0); } }
+@keyframes net-ripple { from { scale: 0.65; opacity: 0.8; } to { scale: 1.2; opacity: 0; } }
+
+@media (max-aspect-ratio: 3/4) {
+  .fleet-ship { width: clamp(7.2rem, 29vw, 11rem); }
+  .fleet-ship:nth-child(1) { --ship-x: 22% !important; --ship-y: 65% !important; }
+  .fleet-ship:nth-child(2) { --ship-x: 50% !important; --ship-y: 55% !important; }
+  .fleet-ship:nth-child(3) { --ship-x: 78% !important; --ship-y: 65% !important; }
+  .game-dock { padding-inline: 0.2rem; }
+  .ship-actions { gap: 0.15rem; }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-btn {
+    animation: none;
+  }
+  .fleet-ship, .fleet-ship-sailingOut, .fleet-ship-casting, .fleet-ship-fishing, .fleet-ship-hauling, .fleet-ship-sailingHome, .fishing-ripple { animation: none; transition: none; }
+}
+
+.reduce-game-motion .fleet-ship,
+.reduce-game-motion .fishing-ripple { animation: none !important; transition: none !important; }
+
+
+/* ── Intro / loading screen ──────────────────────────────── */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  background: oklch(0.16 0.04 60);
+  opacity: 1;
+  transition: opacity 800ms ease, filter 800ms ease;
+}
+
+.intro-leaving {
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.intro-art {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  animation: intro-zoom 9s ease-out forwards;
+}
+
+@keyframes intro-zoom {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.intro-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 50% at 50% 20%, transparent, oklch(0.12 0.04 60 / 0.35)),
+    linear-gradient(to top, oklch(0.1 0.03 60 / 0.95) 8%, oklch(0.1 0.03 60 / 0.35) 45%, transparent 70%);
+}
+
+.intro-content {
+  position: absolute;
+  inset-inline: 0;
+  bottom: max(2.5rem, env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  padding-inline: 1.5rem;
+  text-align: center;
+}
+
+.intro-title {
+  display: flex;
+  gap: 0.6rem;
+  font-size: clamp(2.2rem, 11vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: oklch(0.97 0.02 90);
+  text-shadow: 0 4px 18px oklch(0.1 0.03 60 / 0.8);
+  animation: intro-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-title-accent {
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.intro-sub {
+  font-size: 0.95rem;
+  letter-spacing: 0.25em;
+  color: color-mix(in oklab, var(--gold) 75%, white);
+  animation: intro-rise 900ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.intro-bar {
+  position: relative;
+  width: min(560px, 100%);
+  height: 14px;
+  margin-top: 0.6rem;
+  border-radius: 999px;
+  background: oklch(0.2 0.03 60 / 0.75);
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: inset 0 2px 6px oklch(0 0 0 / 0.6);
+  overflow: hidden;
+}
+
+.intro-bar-fill {
+  position: relative;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  box-shadow: 0 0 14px color-mix(in oklab, var(--gold) 70%, transparent);
+  transition: width 120ms linear;
+}
+
+.intro-bar-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    oklch(1 0 0 / 0.55) 45%,
+    transparent 70%
+  );
+  animation: intro-shine 1.6s linear infinite;
+}
+
+@keyframes intro-shine {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.intro-meta {
+  display: flex;
+  width: min(560px, 100%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: oklch(0.95 0.01 90 / 0.85);
+}
+
+.intro-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-art,
+  .intro-bar-shine,
+  .intro-title,
+  .intro-sub {
+    animation: none;
+  }
+}
+
+/* ── Luxury background shop ──────────────────────────────── */
+.shop-panel {
+  background:
+    radial-gradient(120% 70% at 50% -10%, color-mix(in oklab, var(--gold) 14%, transparent), transparent 65%),
+    linear-gradient(160deg, oklch(0.22 0.05 250 / 0.96), oklch(0.14 0.04 255 / 0.98));
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  box-shadow:
+    0 30px 70px oklch(0 0 0 / 0.6),
+    inset 0 1px 0 color-mix(in oklab, var(--gold) 35%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.shop-card {
+  border: 1px solid oklch(1 0 0 / 0.12);
+  box-shadow: 0 10px 24px oklch(0 0 0 / 0.45);
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in oklab, var(--gold) 65%, transparent);
+  box-shadow:
+    0 18px 34px oklch(0 0 0 / 0.55),
+    0 0 22px color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+.shop-card-active {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--gold) 70%, transparent),
+    0 0 26px color-mix(in oklab, var(--gold) 45%, transparent);
+}
+
+.shop-sheen {
+  background: linear-gradient(115deg, transparent 40%, oklch(1 0 0 / 0.35) 50%, transparent 60%);
+  transform: translateX(-130%);
+  transition: transform 900ms ease;
+}
+
+.shop-card:hover .shop-sheen {
+  transform: translateX(130%);
+}
+
+.shop-card-in {
+  animation: shop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shop-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-in,
+  .shop-sheen {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ── Fish market: quantity slider ────────────────────────── */
+.fish-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), oklch(0.98 0.02 90));
+  border: 1px solid oklch(0 0 0 / 0.35);
+  box-shadow: inset 0 2px 6px oklch(0 0 0 / 0.45);
+  outline: none;
+}
+.fish-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, oklch(1 0 0), oklch(0.85 0.02 90));
+  border: 2px solid oklch(0.3 0.05 60);
+  box-shadow: 0 4px 10px oklch(0 0 0 / 0.55);
+  cursor: pointer;
+}
+.fish-range::-moz-range-thumb {
+  height: 1.4rem;
+  width: 1.4rem;
+  border-radius: 999px;
+  background: oklch(1 0 0);
+  border: 2px solid oklch(0.3 0.05 60);
+  cursor: pointer;
+}
+
+/* ── Net cast animation ──────────────────────────────────── */
+.net-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: oklch(0.08 0.03 250 / 0.82);
+  backdrop-filter: blur(6px);
+}
+.net-water {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  background: linear-gradient(180deg, oklch(0.55 0.12 230 / 0.35), oklch(0.28 0.09 240 / 0.9));
+  animation: net-swell 3s ease-in-out infinite;
+}
+@keyframes net-swell {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-2%) scaleY(1.04); }
+}
+.net-img {
+  position: relative;
+  width: min(58vw, 18rem);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 26px oklch(0 0 0 / 0.6));
+}
+.net-throw { animation: net-throw 750ms cubic-bezier(0.3, 0.9, 0.4, 1) both; }
+.net-splash { animation: net-splash 750ms ease-out both; }
+.net-haul { animation: net-haul 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes net-throw {
+  from { transform: translate(40%, -70%) rotate(-40deg) scale(0.5); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes net-splash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08) translateY(6%); }
+  100% { transform: scale(1) translateY(3%); }
+}
+@keyframes net-haul {
+  from { transform: translateY(10%) scale(1); }
+  to { transform: translateY(-12%) scale(1.05); }
+}
+.net-ripple {
+  position: absolute;
+  bottom: 28%;
+  height: 6rem;
+  width: 6rem;
+  border-radius: 999px;
+  border: 2px solid oklch(0.95 0.03 220 / 0.7);
+  animation: net-ripple 1.6s ease-out infinite;
+}
+.net-ripple-2 { animation-delay: 0.6s; }
+@keyframes net-ripple {
+  from { transform: scale(0.4); opacity: 0.8; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+.net-loot {
+  position: absolute;
+  bottom: 22%;
+  display: flex;
+  gap: 0.75rem;
+}
+.net-loot li { animation: loot-pop 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.net-loot img { height: 3rem; width: 3rem; object-fit: contain; filter: drop-shadow(0 6px 12px oklch(0 0 0 / 0.6)); }
+@keyframes loot-pop {
+  from { transform: translateY(30px) scale(0.4); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.net-caption {
+  position: absolute;
+  top: 12%;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 2px 10px oklch(0 0 0 / 0.8);
+}
+
+/* ── Shipyard cards & action sheet ───────────────────────── */
+.ship-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1.25rem;
+  padding: 0.75rem;
+  background: linear-gradient(150deg, oklch(0.26 0.05 250 / 0.9), oklch(0.15 0.04 255 / 0.95));
+  border: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  box-shadow: 0 14px 30px oklch(0 0 0 / 0.5);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
+}
+.ship-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px oklch(0 0 0 / 0.6), 0 0 22px color-mix(in oklab, var(--gold) 30%, transparent);
+}
+.ship-sheet {
+  position: relative;
+  width: min(100%, 26rem);
+  border-radius: 1.5rem;
+  padding: 1rem;
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 60%),
+    linear-gradient(165deg, oklch(0.24 0.05 250 / 0.97), oklch(0.13 0.04 255 / 0.99));
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: 0 30px 70px oklch(0 0 0 / 0.65);
+  animation: shop-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.act-btn {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  border-radius: 1rem;
+  padding: 0.5rem 0.7rem;
+  background: oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+.act-btn:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--gold) 60%, transparent); }
+.act-btn-on {
+  border-color: var(--gold);
+  background: color-mix(in oklab, var(--gold) 18%, transparent);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+/* ── Daily quests board ──────────────────────────────────── */
+.quest-board {
+  margin-top: 1rem;
+  border-radius: 1.25rem;
+  padding: 0.85rem;
+  background: linear-gradient(160deg, oklch(0.24 0.05 250 / 0.92), oklch(0.14 0.04 255 / 0.96));
+  border: 1px solid color-mix(in oklab, var(--gold) 40%, transparent);
+  box-shadow: 0 18px 40px oklch(0 0 0 / 0.5);
+}
+.quest-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.quest-head h2 { flex: 1; font-weight: 900; color: var(--gold); }
+.quest-gems {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  background: oklch(0 0 0 / 0.45);
+  padding: 0.2rem 0.6rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+.quest-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.55rem;
+  background: oklch(0 0 0 / 0.35);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+.quest-row-done { border-color: color-mix(in oklab, var(--gold) 60%, transparent); }
+.quest-bar {
+  margin-top: 0.35rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.12);
+  overflow: hidden;
+}
+.quest-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  transition: width 400ms ease;
+}
+.quest-claim {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  font-weight: 900;
+  color: oklch(0.15 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 8px 18px oklch(0 0 0 / 0.45);
+  transition: filter 160ms ease;
+}
+.quest-claim:hover:not(:disabled) { filter: brightness(1.12); }
+.quest-claim:disabled { opacity: 0.4; }
+
+/* ── Daily login reward ──────────────────────────────────── */
+.daily-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: oklch(0 0 0 / 0.7);
+  backdrop-filter: blur(8px);
+}
+.daily-panel {
+  position: relative;
+  width: min(100%, 24rem);
+  border-radius: 1.5rem;
+  padding: 1.1rem;
+  color: oklch(0.98 0.01 90);
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--gold) 18%, transparent), transparent 60%),
+    linear-gradient(165deg, oklch(0.24 0.05 250 / 0.97), oklch(0.12 0.04 255 / 0.99));
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: 0 30px 70px oklch(0 0 0 / 0.65);
+  animation: shop-in 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.daily-title {
+  margin-bottom: 0.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+.daily-cell {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  border-radius: 0.9rem;
+  padding: 0.5rem 0.25rem;
+  background: oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(1 0 0 / 0.1);
+}
+.daily-cell-past { opacity: 0.45; }
+.daily-cell-now {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--gold) 40%, transparent);
+}
+.daily-claim {
+  margin-top: 0.9rem;
+  width: 100%;
+  border-radius: 1rem;
+  padding: 0.6rem;
+  font-weight: 900;
+  color: oklch(0.15 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 12px 26px oklch(0 0 0 / 0.5);
+  transition: filter 160ms ease;
+}
+.daily-claim:hover { filter: brightness(1.12); }
+
+/* ── Auth & chat polish ──────────────────────────────────── */
+.auth-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/img/intro.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.28;
+  filter: saturate(1.1);
+}
+.chat-bubble-me {
+  background: linear-gradient(200deg, var(--gold), var(--gold-deep));
+  color: oklch(0.16 0.02 250);
+}
+.chat-bubble-them {
+  background: linear-gradient(200deg, oklch(0.32 0.05 250 / 0.95), oklch(0.2 0.04 255 / 0.95));
+  border: 1px solid oklch(1 0 0 / 0.1);
+}
+
+/* ── Floating game windows ───────────────────────────────── */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: max(0.75rem, env(safe-area-inset-top)) 0.6rem max(0.75rem, env(safe-area-inset-bottom));
+  background: oklch(0.12 0.04 250 / 0.55);
+  backdrop-filter: blur(6px);
+  animation: winFade 220ms ease both;
+}
+
+@keyframes winFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.win-frame {
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 34rem);
+  max-height: 92svh;
+  overflow: hidden;
+  border-radius: 1.15rem;
+  border: 1px solid color-mix(in oklab, var(--gold) 40%, transparent);
+  background: linear-gradient(180deg, oklch(0.24 0.05 250 / 0.94), oklch(0.16 0.05 255 / 0.96));
+  box-shadow: 0 24px 60px oklch(0.05 0.03 250 / 0.6);
+  animation: winPop 260ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.win-lg { width: min(100%, 44rem); }
+.win-xl { width: min(100%, 62rem); }
+
+@keyframes winPop {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+.win-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid oklch(1 0 0 / 0.08);
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.06), transparent);
+}
+
+.win-title h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.win-title p {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  color: oklch(0.85 0.02 250 / 0.7);
+}
+
+.win-close {
+  margin-inline-start: auto;
+  display: grid;
+  place-items: center;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 999px;
+  color: oklch(0.95 0.02 250);
+  background: oklch(1 0 0 / 0.08);
+  border: 1px solid oklch(1 0 0 / 0.12);
+}
+
+.win-close:hover { background: oklch(1 0 0 / 0.16); }
+
+.win-embed {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Embedded screens keep their own markup — strip their page chrome. */
+.win-embed > * {
+  min-height: 0 !important;
+  height: auto !important;
+  background: transparent !important;
+}
+
+/* ── Trading floor ───────────────────────────────────────── */
+.tf { padding: 0.75rem; color: oklch(0.95 0.02 250); }
+
+.tf-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.65rem;
+}
+
+.tf-tabs { display: flex; gap: 0.4rem; }
+
+.tf-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background: oklch(1 0 0 / 0.06);
+}
+
+.tf-tab img { height: 1.1rem; width: 1.1rem; object-fit: contain; }
+
+.tf-tab.is-on {
+  border-color: color-mix(in oklab, var(--gold) 60%, transparent);
+  background: color-mix(in oklab, var(--gold) 18%, transparent);
+  color: var(--gold);
+}
+
+.tf-wallet {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.07);
+  font-variant-numeric: tabular-nums;
+}
+
+.tf-wallet img { height: 1.1rem; width: 1.1rem; }
+
+.tf-grid { display: grid; gap: 0.7rem; grid-template-columns: 1fr; }
+
+@media (min-width: 48rem) {
+  .tf-grid { grid-template-columns: 17rem 1fr; }
+}
+
+.tf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 16rem;
+  overflow: auto;
+}
+
+@media (min-width: 48rem) {
+  .tf-list { max-height: 30rem; }
+}
+
+.tf-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.8rem;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(1 0 0 / 0.04);
+  text-align: start;
+}
+
+.tf-row.is-on {
+  border-color: color-mix(in oklab, var(--gold) 55%, transparent);
+  background: color-mix(in oklab, var(--gold) 12%, transparent);
+}
+
+.tf-row-img { height: 2.2rem; width: 2.2rem; object-fit: contain; }
+.tf-row-name { display: flex; flex-direction: column; }
+.tf-row-name b { font-size: 0.85rem; }
+.tf-row-name i { font-style: normal; font-size: 0.68rem; opacity: 0.65; }
+.tf-row-price { margin-inline-start: auto; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
+.tf-row-price b { font-size: 0.85rem; }
+.tf-row-price i { font-style: normal; font-size: 0.68rem; }
+
+.up { color: oklch(0.8 0.16 150); }
+.dn { color: oklch(0.72 0.18 25); }
+
+.tf-main {
+  border-radius: 1rem;
+  border: 1px solid oklch(1 0 0 / 0.08);
+  background: oklch(1 0 0 / 0.04);
+  padding: 0.7rem;
+}
+
+.tf-head { display: flex; align-items: center; gap: 0.6rem; }
+.tf-hero { height: 3.2rem; width: 3.2rem; object-fit: contain; }
+.tf-head-text h3 { margin: 0; font-size: 1rem; font-weight: 800; }
+.tf-head-text p { margin: 0.1rem 0 0; font-size: 0.72rem; opacity: 0.7; }
+.tf-price { margin-inline-start: auto; text-align: end; font-variant-numeric: tabular-nums; }
+.tf-price b { display: block; font-size: 1.1rem; color: var(--gold); }
+.tf-price i { font-style: normal; font-size: 0.75rem; }
+
+.tf-chart {
+  margin: 0.6rem 0;
+  width: 100%;
+  height: 9rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, oklch(0.2 0.05 255 / 0.7), oklch(0.14 0.04 255 / 0.7));
+}
+
+.tf-chart .cd-up rect { fill: oklch(0.8 0.16 150); }
+.tf-chart .cd-up line { stroke: oklch(0.8 0.16 150); stroke-width: 0.6; }
+.tf-chart .cd-dn rect { fill: oklch(0.72 0.18 25); }
+.tf-chart .cd-dn line { stroke: oklch(0.72 0.18 25); stroke-width: 0.6; }
+
+.tf-book { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; font-variant-numeric: tabular-nums; }
+.tf-book-col h4 { margin: 0 0 0.25rem; font-size: 0.72rem; opacity: 0.65; font-weight: 700; }
+.tf-book-col p { display: flex; justify-content: space-between; margin: 0; font-size: 0.75rem; padding: 0.12rem 0; }
+
+.tf-ticket {
+  margin-top: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tf-qty { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem; border-radius: 999px; background: oklch(1 0 0 / 0.07); }
+.tf-qty button { font-size: 1.05rem; line-height: 1; padding: 0 0.35rem; }
+.tf-total { font-size: 0.8rem; opacity: 0.8; }
+.tf-total b { color: var(--gold); }
+
+.tf-buy, .tf-sell {
+  margin-inline-start: auto;
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.8rem;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: oklch(0.12 0.03 250);
+}
+
+.tf-buy { background: oklch(0.8 0.16 150); }
+.tf-sell { margin-inline-start: 0; background: oklch(0.75 0.17 25); }
+
+.tf-flash { margin: 0.55rem 0 0; font-size: 0.78rem; color: var(--gold); }
+
+.tf-log { margin-top: 0.6rem; border-top: 1px solid oklch(1 0 0 / 0.08); padding-top: 0.4rem; }
+.tf-log p { margin: 0; font-size: 0.72rem; opacity: 0.8; display: flex; gap: 0.35rem; }
+
+/* ── Premium top bar ─────────────────────────────────────── */
+.hud-bar {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.35rem, 2vw, 0.9rem);
+  width: min(100%, 46rem);
+  margin-inline: auto;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 38%, transparent);
+  background: linear-gradient(180deg, oklch(0.28 0.05 250 / 0.72), oklch(0.14 0.04 255 / 0.82));
+  box-shadow: 0 10px 28px oklch(0 0 0 / 0.45), inset 0 1px 0 oklch(1 0 0 / 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.hud-player {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding-inline-end: 0.35rem;
+}
+
+.hud-avatar {
+  position: relative;
+  display: grid;
+  height: clamp(1.9rem, 7vw, 2.6rem);
+  width: clamp(1.9rem, 7vw, 2.6rem);
+  flex: none;
+  place-items: center;
+  overflow: visible;
+  border-radius: 999px;
+  border: 2px solid var(--gold);
+  background: linear-gradient(160deg, oklch(0.38 0.06 250), oklch(0.18 0.04 255));
+  box-shadow: 0 2px 10px oklch(0 0 0 / 0.6);
+}
+
+.hud-avatar-art { height: 100%; width: 100%; border-radius: 999px; object-fit: cover; }
+
+.hud-lvl {
+  position: absolute;
+  bottom: -0.35rem;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  padding: 0 0.32rem;
+  border-radius: 999px;
+  font-size: 0.58rem;
+  font-weight: 900;
+  color: oklch(0.16 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 1px 4px oklch(0 0 0 / 0.6);
+}
+
+.hud-id { display: grid; gap: 0.22rem; min-width: 0; }
+
+.hud-level {
+  display: block;
+  height: 0.32rem;
+  width: clamp(3rem, 16vw, 5.5rem);
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.14);
+  overflow: hidden;
+}
+
+.hud-level > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), oklch(0.9 0.16 90));
+  box-shadow: 0 0 10px color-mix(in oklab, var(--gold) 55%, transparent);
+}
+
+.hud-values {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.2rem, 1.4vw, 0.5rem);
+  min-width: 0;
+}
+
+.hud-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.22rem 0.5rem 0.22rem 0.28rem;
+  border-radius: 999px;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.1), oklch(0 0 0 / 0.35));
+}
+
+.hud-slot-gold { border-color: color-mix(in oklab, var(--gold) 55%, transparent); }
+.hud-slot-gem { border-color: oklch(0.75 0.16 200 / 0.5); }
+.hud-slot-pearl { border-color: oklch(0.85 0.06 320 / 0.45); }
+
+/* ── Captain's log sign-in ───────────────────────────────── */
+.auth-stage {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+.auth-scene {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  filter: saturate(1.05) brightness(0.62);
+}
+
+.auth-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 50% at 50% 0%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 70%),
+    linear-gradient(180deg, oklch(0.1 0.03 250 / 0.35), oklch(0.08 0.03 250 / 0.85));
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 24rem);
+  padding: 1.5rem 1.25rem 1.15rem;
+  border-radius: 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  background: linear-gradient(180deg, oklch(0.26 0.05 250 / 0.82), oklch(0.13 0.04 255 / 0.92));
+  box-shadow: 0 30px 70px oklch(0 0 0 / 0.6), inset 0 1px 0 oklch(1 0 0 / 0.14);
+  backdrop-filter: blur(16px);
+  animation: winPop 380ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  color: oklch(0.96 0.02 250);
+  text-align: center;
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: 0.35rem;
+  border-radius: 1.2rem;
+  border: 1px solid oklch(1 0 0 / 0.07);
+  pointer-events: none;
+}
+
+.auth-crest {
+  display: grid;
+  place-items: center;
+  height: 5rem;
+  margin: -3.6rem auto 0.35rem;
+  width: 5rem;
+  border-radius: 999px;
+  border: 2px solid var(--gold);
+  background: radial-gradient(circle at 50% 30%, oklch(0.34 0.06 250), oklch(0.14 0.04 255));
+  box-shadow: 0 12px 30px oklch(0 0 0 / 0.6), 0 0 34px color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+.auth-crest img { height: 78%; width: 78%; object-fit: contain; }
+
+.auth-title { margin: 0.4rem 0 0.15rem; font-size: 1.35rem; font-weight: 900; color: var(--gold); }
+.auth-sub { margin: 0; font-size: 0.74rem; color: oklch(0.9 0.02 250 / 0.62); }
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+  margin: 0.95rem 0 0.6rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+
+.auth-tab {
+  border-radius: 999px;
+  padding: 0.45rem 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: oklch(0.9 0.02 250 / 0.65);
+  transition: all 180ms ease;
+}
+
+.auth-tab-on {
+  color: oklch(0.16 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 6px 16px oklch(0 0 0 / 0.45);
+}
+
+.auth-avatars { margin-bottom: 0.55rem; }
+.auth-avatars-label { display: block; margin-bottom: 0.35rem; font-size: 0.7rem; color: oklch(0.9 0.02 250 / 0.6); }
+.auth-avatars-row { display: flex; justify-content: center; gap: 0.35rem; flex-wrap: wrap; }
+
+.auth-avatar {
+  height: 2.6rem;
+  width: 2.6rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 2px solid oklch(1 0 0 / 0.14);
+  background: oklch(0 0 0 / 0.35);
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.auth-avatar:hover { transform: translateY(-2px); }
+.auth-avatar-on {
+  border-color: var(--gold);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--gold) 45%, transparent);
+}
+
+.auth-form { display: grid; gap: 0.55rem; margin-top: 0.35rem; }
+
+.auth-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.95rem;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  background: oklch(0 0 0 / 0.4);
+  color: oklch(0.92 0.02 250 / 0.75);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.auth-field:focus-within {
+  border-color: color-mix(in oklab, var(--gold) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 16%, transparent);
+}
+
+.auth-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: oklch(0.98 0.01 250);
+  outline: none;
+}
+
+.auth-error {
+  margin: 0;
+  border-radius: 0.7rem;
+  background: oklch(0.35 0.14 25 / 0.35);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  color: oklch(0.9 0.09 25);
+}
+
+.auth-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+  border-radius: 1rem;
+  padding: 0.72rem;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: oklch(0.16 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 14px 30px oklch(0 0 0 / 0.5);
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.auth-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.auth-submit:disabled { opacity: 0.7; }
+
+.auth-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0.85rem 0 0;
+  font-size: 0.67rem;
+  color: oklch(0.9 0.02 250 / 0.55);
+}
