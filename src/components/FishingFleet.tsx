@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { X } from "lucide-react";
 
-import shipIdle from "@/assets/ships/fishing-ship-idle.png";
-import shipCast from "@/assets/ships/fishing-ship-cast.png";
-import shipHaul from "@/assets/ships/fishing-ship-haul.png";
-import shipSubmerged from "@/assets/ships/fishing-ship-submerged.png";
+import shipIdle from "@/assets/ships/fishing-ship-premium-idle.png";
+import shipCast from "@/assets/ships/fishing-ship-premium-cast.png";
+import shipHaul from "@/assets/ships/fishing-ship-premium-haul.png";
+import shipSubmerged from "@/assets/ships/fishing-ship-premium-submerged.png";
 import { GameSprite } from "@/components/GameSprite";
 import { Button } from "@/components/ui/button";
 import { CREWS } from "@/lib/items";
@@ -13,23 +13,53 @@ import { playSfx } from "@/lib/sound";
 
 type ShipState = "docked" | "sailingOut" | "casting" | "fishing" | "hauling" | "sailingHome" | "sold";
 type FleetShip = { id: number; state: ShipState };
-type ShipStyle = CSSProperties & { "--ship-x": string; "--ship-y": string; "--ship-delay": string };
+type ShipStyle = CSSProperties & {
+  "--ship-x": string;
+  "--ship-y": string;
+  "--ship-delay": string;
+  "--sea-x": string;
+  "--sea-y": string;
+  "--sea-turn": string;
+};
 
 const initialFleet: FleetShip[] = [1, 2, 3].map((id) => ({ id, state: "docked" }));
 const positions = [
-  { x: "29%", y: "65%", delay: "0ms" },
-  { x: "50%", y: "57%", delay: "260ms" },
-  { x: "70%", y: "65%", delay: "520ms" },
+  { x: "31%", y: "67%", seaX: "45%", seaY: "45%", turn: "-15deg", delay: "0ms" },
+  { x: "51%", y: "59%", seaX: "59%", seaY: "39%", turn: "-10deg", delay: "260ms" },
+  { x: "72%", y: "67%", seaX: "76%", seaY: "46%", turn: "-7deg", delay: "520ms" },
 ];
+
+const shipFrames = [
+  { key: "idle", src: shipIdle },
+  { key: "cast", src: shipCast },
+  { key: "submerged", src: shipSubmerged },
+  { key: "haul", src: shipHaul },
+] as const;
 
 export function FishingFleet() {
   const [ships, setShips] = useState(initialFleet);
+  const [assetsReady, setAssetsReady] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [crewFor, setCrewFor] = useState<number | null>(null);
   const [sellFor, setSellFor] = useState<number | null>(null);
   const timers = useRef<number[]>([]);
 
-  useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), []);
+  useEffect(() => {
+    let active = true;
+    void Promise.all(
+      shipFrames.map(({ src }) => {
+        const image = new Image();
+        image.src = src;
+        return image.decode().catch(() => undefined);
+      }),
+    ).then(() => {
+      if (active) setAssetsReady(true);
+    });
+    return () => {
+      active = false;
+      timers.current.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
 
   const update = (id: number, state: ShipState) => {
     setShips((current) => current.map((ship) => (ship.id === id ? { ...ship, state } : ship)));
@@ -49,8 +79,8 @@ export function FishingFleet() {
         return;
       }
       update(ship.id, "sailingOut");
-      later(() => update(ship.id, "casting"), 2100);
-      later(() => update(ship.id, "fishing"), 3050);
+      later(() => update(ship.id, "casting"), 2350);
+      later(() => update(ship.id, "fishing"), 3550);
       return;
     }
     if (ship.state === "fishing") {
@@ -59,20 +89,27 @@ export function FishingFleet() {
         return;
       }
       update(ship.id, "hauling");
-      later(() => update(ship.id, "sailingHome"), 950);
-      later(() => update(ship.id, "docked"), 3150);
+      later(() => update(ship.id, "sailingHome"), 1250);
+      later(() => update(ship.id, "docked"), 3850);
     }
   };
 
   return (
-    <div className="fleet-layer" aria-label="أسطول الصيد">
+    <div className={`fleet-layer ${assetsReady ? "fleet-ready" : ""}`} aria-label="أسطول الصيد" aria-busy={!assetsReady}>
       {ships.map((ship, index) => {
         if (ship.state === "sold") return null;
         const pos = positions[index];
         if (!pos) return null;
         const busy = ship.state === "sailingOut" || ship.state === "casting" || ship.state === "hauling" || ship.state === "sailingHome";
-        const image = ship.state === "casting" ? shipCast : ship.state === "fishing" ? shipSubmerged : ship.state === "hauling" ? shipHaul : shipIdle;
-        const style: ShipStyle = { "--ship-x": pos.x, "--ship-y": pos.y, "--ship-delay": pos.delay };
+        const frame = ship.state === "casting" ? "cast" : ship.state === "fishing" ? "submerged" : ship.state === "hauling" ? "haul" : "idle";
+        const style: ShipStyle = {
+          "--ship-x": pos.x,
+          "--ship-y": pos.y,
+          "--ship-delay": pos.delay,
+          "--sea-x": pos.seaX,
+          "--sea-y": pos.seaY,
+          "--sea-turn": pos.turn,
+        };
         return (
           <div key={ship.id} className={`fleet-ship fleet-ship-${ship.state}`} style={style}>
             {selected === ship.id && !busy && (
@@ -96,7 +133,20 @@ export function FishingFleet() {
               onClick={() => { setSelected((current) => current === ship.id ? null : ship.id); playSfx("click", 0.6); }}
             >
               <span className="ship-water-shadow" />
-              <img src={image} alt={`سفينة الصيد ${ship.id}`} width={1536} height={1024} draggable={false} />
+              <span className="ship-art" aria-hidden="true">
+                {shipFrames.map(({ key, src }) => (
+                  <img
+                    key={key}
+                    src={src}
+                    className={`ship-frame ${frame === key ? "ship-frame-active" : ""}`}
+                    alt=""
+                    width={1536}
+                    height={1024}
+                    draggable={false}
+                  />
+                ))}
+              </span>
+              <span className="sr-only">سفينة الصيد {ship.id}</span>
               {ship.state === "fishing" && <span className="fishing-ripple" />}
             </Button>
           </div>
@@ -126,14 +176,14 @@ function CrewPanel({ shipId, onClose }: { shipId: number; onClose: () => void })
   return (
     <div className="fleet-modal" role="dialog" aria-modal="true" aria-label={`طاقم السفينة ${shipId}`} onClick={onClose}>
       <section className="crew-panel" dir="rtl" onClick={(event) => event.stopPropagation()}>
-        <header><h2>طاقم السفينة {shipId}</h2><Button variant="ghost" size="icon" onClick={onClose} aria-label="إغلاق"><X /></Button></header>
+        <header><span className="crew-title-mark" aria-hidden="true">⚓</span><h2>طاقم السفينة {shipId}</h2><Button variant="ghost" size="icon" onClick={onClose} aria-label="إغلاق"><X /></Button></header>
         <ul>
           {CREWS.slice(0, 4).map((crew, index) => (
             <li key={crew.id}>
               <GameSprite atlas="crew" index={index} className="crew-portrait" />
-              <span><strong>{crew.name}</strong><small>{crew.desc}</small></span>
+              <span className="crew-copy"><strong>{crew.name}</strong><small>{crew.desc}</small></span>
               <Button disabled={active === crew.id} onClick={() => { setActive(crew.id); playSfx("click", 0.7); }}>
-                {active === crew.id ? "يعمل الآن" : "استخدام"}<small>{crew.hours}H · {fmt(crew.price)}</small>
+                {active === crew.id ? "يعمل الآن" : "استخدام"}<small>{active === crew.id ? "04:59:59" : `${crew.hours}H · ${fmt(crew.price)}`}</small>
               </Button>
             </li>
           ))}
