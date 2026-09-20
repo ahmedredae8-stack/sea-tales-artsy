@@ -467,7 +467,7 @@
 .sell-panel > div { display: flex; gap: 0.6rem; }
 
 @keyframes ship-idle { 0%, 100% { translate: -50% -50%; rotate: 0deg; } 50% { translate: -50% calc(-50% - 4px); rotate: 0.6deg; } }
-@keyframes sail-out { 0% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 0deg; } 22% { left: calc((var(--ship-x) + var(--sea-x)) / 2); top: calc((var(--ship-y) + var(--sea-y)) / 2 + 2%); rotate: 3deg; } 62% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: 0deg; } 100% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } }
+@keyframes sail-out { 0% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 0deg; } 62% { left: var(--sea-x); top: calc(var(--sea-y) + 2%); translate: -50% -50%; rotate: 3deg; } 100% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } }
 @keyframes cast-settle { 0% { translate: -50% -50%; scale: 0.97; } 45% { translate: -50% calc(-50% - 5px); scale: 1.015; } 100% { translate: -50% -50%; scale: 1; } }
 @keyframes haul-net { 0%, 100% { translate: -50% -50%; } 45% { translate: -50% calc(-50% - 7px); } }
 @keyframes sail-home { 0% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } 20% { left: var(--sea-x); top: var(--sea-y); rotate: 180deg; } 78% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 180deg; } 100% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 360deg; } }
