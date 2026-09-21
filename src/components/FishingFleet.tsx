@@ -20,13 +20,15 @@ type ShipStyle = CSSProperties & {
   "--sea-x": string;
   "--sea-y": string;
   "--sea-turn": string;
+  "--route-x": string;
+  "--route-y": string;
 };
 
 const initialFleet: FleetShip[] = [1, 2, 3].map((id) => ({ id, state: "docked" }));
 const positions = [
-  { x: "31%", y: "67%", seaX: "45%", seaY: "45%", turn: "-15deg", delay: "0ms" },
-  { x: "51%", y: "59%", seaX: "59%", seaY: "39%", turn: "-10deg", delay: "260ms" },
-  { x: "72%", y: "67%", seaX: "76%", seaY: "46%", turn: "-7deg", delay: "520ms" },
+  { x: "31%", y: "67%", seaX: "45%", seaY: "45%", routeX: "35%", routeY: "52%", turn: "-15deg", delay: "0ms" },
+  { x: "51%", y: "59%", seaX: "59%", seaY: "39%", routeX: "48%", routeY: "46%", turn: "-10deg", delay: "260ms" },
+  { x: "72%", y: "67%", seaX: "76%", seaY: "46%", routeX: "82%", routeY: "55%", turn: "-7deg", delay: "520ms" },
 ];
 
 const shipFrames = [
@@ -109,6 +111,8 @@ export function FishingFleet() {
           "--sea-x": pos.seaX,
           "--sea-y": pos.seaY,
           "--sea-turn": pos.turn,
+          "--route-x": pos.routeX,
+          "--route-y": pos.routeY,
         };
         return (
           <div key={ship.id} className={`fleet-ship fleet-ship-${ship.state}`} style={style}>

@@ -424,12 +424,11 @@
   aspect-ratio: 3 / 2;
   translate: -50% -50%;
   pointer-events: auto;
-  animation: ship-idle 3.6s ease-in-out var(--ship-delay) infinite;
   will-change: left, top, translate, rotate;
 }
 .ship-hitbox { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; overflow: visible; background: transparent; }
 .ship-hitbox:hover { background: transparent; }
-.ship-art { position: absolute; inset: 0; z-index: 2; display: block; }
+.ship-art { position: absolute; inset: 0; z-index: 2; display: block; animation: ship-idle 3.6s ease-in-out var(--ship-delay) infinite; will-change: translate, rotate; }
 .ship-frame { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; scale: 0.975; filter: drop-shadow(0 8px 6px oklch(0.08 0.04 235 / 0.72)); user-select: none; transition: opacity 360ms ease, scale 520ms cubic-bezier(0.22, 1, 0.36, 1), filter 360ms ease; }
 .ship-frame-active { opacity: 1; scale: 1; }
 .ship-water-shadow { position: absolute; z-index: 1; left: 14%; right: 8%; bottom: 19%; height: 12%; border-radius: 50%; background: oklch(0.16 0.07 225 / 0.52); filter: blur(5px); transition: opacity 360ms ease, scale 500ms ease; }
@@ -438,7 +437,7 @@
 .fleet-ship-casting,
 .fleet-ship-fishing { left: var(--sea-x); top: var(--sea-y); rotate: var(--sea-turn); }
 .fleet-ship-casting { left: var(--sea-x); top: var(--sea-y); rotate: var(--sea-turn); animation: cast-settle 1.2s ease-out; }
-.fleet-ship-fishing { animation: ship-idle 3.2s ease-in-out infinite; }
+.fleet-ship-fishing .ship-art { animation-duration: 3.2s; }
 .fleet-ship-fishing .ship-water-shadow { opacity: 0.62; scale: 0.82; }
 .fleet-ship-hauling { left: var(--sea-x); top: var(--sea-y); rotate: var(--sea-turn); animation: haul-net 1.25s ease-in-out; }
 .fleet-ship-sailingHome { animation: sail-home 2.65s cubic-bezier(0.45, 0, 0.2, 1) forwards; }
@@ -466,11 +465,11 @@
 .sell-panel p { max-width: 25rem; font-size: 0.85rem; color: oklch(0.87 0.025 230); }
 .sell-panel > div { display: flex; gap: 0.6rem; }
 
-@keyframes ship-idle { 0%, 100% { translate: -50% -50%; rotate: 0deg; } 50% { translate: -50% calc(-50% - 4px); rotate: 0.6deg; } }
-@keyframes sail-out { 0% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 0deg; } 62% { left: var(--sea-x); top: calc(var(--sea-y) + 2%); translate: -50% -50%; rotate: 3deg; } 100% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } }
+@keyframes ship-idle { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -4px; rotate: 0.6deg; } }
+@keyframes sail-out { 0% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 0deg; } 58% { left: var(--route-x); top: var(--route-y); translate: -50% -50%; rotate: 4deg; } 100% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } }
 @keyframes cast-settle { 0% { translate: -50% -50%; scale: 0.97; } 45% { translate: -50% calc(-50% - 5px); scale: 1.015; } 100% { translate: -50% -50%; scale: 1; } }
 @keyframes haul-net { 0%, 100% { translate: -50% -50%; } 45% { translate: -50% calc(-50% - 7px); } }
-@keyframes sail-home { 0% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } 20% { left: var(--sea-x); top: var(--sea-y); rotate: 180deg; } 78% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 180deg; } 100% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 360deg; } }
+@keyframes sail-home { 0% { left: var(--sea-x); top: var(--sea-y); translate: -50% -50%; rotate: var(--sea-turn); } 20% { left: var(--sea-x); top: var(--sea-y); rotate: 180deg; } 66% { left: var(--route-x); top: var(--route-y); translate: -50% -50%; rotate: 184deg; } 100% { left: var(--ship-x); top: var(--ship-y); translate: -50% -50%; rotate: 360deg; } }
 @keyframes net-ripple { from { scale: 0.65; opacity: 0.8; } to { scale: 1.2; opacity: 0; } }
 @keyframes ship-menu-in { from { opacity: 0; translate: -50% 8px; scale: 0.9; } to { opacity: 1; translate: -50% 0; scale: 1; } }
 @keyframes crew-panel-in { from { opacity: 0; translate: 0 18px; scale: 0.96; } to { opacity: 1; translate: 0 0; scale: 1; } }
@@ -501,10 +500,11 @@
   .dock-btn {
     animation: none;
   }
-  .fleet-ship, .fleet-ship-sailingOut, .fleet-ship-casting, .fleet-ship-fishing, .fleet-ship-hauling, .fleet-ship-sailingHome, .fishing-ripple { animation: none; transition: none; }
+  .fleet-ship, .fleet-ship-sailingOut, .fleet-ship-casting, .fleet-ship-fishing, .fleet-ship-hauling, .fleet-ship-sailingHome, .ship-art, .fishing-ripple { animation: none; transition: none; }
 }
 
 .reduce-game-motion .fleet-ship,
+.reduce-game-motion .ship-art,
 .reduce-game-motion .fishing-ripple { animation: none !important; transition: none !important; }
 
 
