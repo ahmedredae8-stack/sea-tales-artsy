@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Restore a fully working game screen after reconnecting the imported backend
 - [ ] Install the seven new dock images and remove the home/duplicate chat controls
 - [ ] Connect the unified store window with worlds, ships, weapons, crews, armor, top-ups, and VIP
 - [ ] Add secure tribe chat and join-request flows
