@@ -1,0 +1,1 @@
+ALTER FUNCTION public.owns_player(UUID) SECURITY INVOKER;
