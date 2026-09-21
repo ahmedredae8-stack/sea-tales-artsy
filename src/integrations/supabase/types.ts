@@ -128,6 +128,86 @@ export type Database = {
         }
         Relationships: []
       }
+      tribe_members: {
+        Row: {
+          contribution: number
+          created_at: string
+          id: string
+          player_id: string
+          rank: string
+          tribe_id: string
+        }
+        Insert: {
+          contribution?: number
+          created_at?: string
+          id?: string
+          player_id: string
+          rank?: string
+          tribe_id: string
+        }
+        Update: {
+          contribution?: number
+          created_at?: string
+          id?: string
+          player_id?: string
+          rank?: string
+          tribe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tribe_members_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: true
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tribe_members_tribe_id_fkey"
+            columns: ["tribe_id"]
+            isOneToOne: false
+            referencedRelation: "tribes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tribes: {
+        Row: {
+          created_at: string
+          emblem: string
+          id: string
+          motto: string
+          name: string
+          owner_id: string
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          emblem?: string
+          id?: string
+          motto?: string
+          name: string
+          owner_id: string
+          score?: number
+        }
+        Update: {
+          created_at?: string
+          emblem?: string
+          id?: string
+          motto?: string
+          name?: string
+          owner_id?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tribes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
