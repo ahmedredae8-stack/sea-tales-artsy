@@ -1,34 +1,35 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { X } from "lucide-react";
 
-import shipIdle from "@/assets/ships/fishing-ship-premium-idle.png";
-import shipCast from "@/assets/ships/fishing-ship-premium-cast.png";
-import shipHaul from "@/assets/ships/fishing-ship-premium-haul.png";
-import shipSubmerged from "@/assets/ships/fishing-ship-premium-submerged.png";
+import shipIdle from "@/assets/ships/ship-v2-idle.png";
+import shipCast from "@/assets/ships/ship-v2-cast.png";
+import shipHaul from "@/assets/ships/ship-v2-haul.png";
+import shipSubmerged from "@/assets/ships/ship-v2-submerged.png";
+import actSail from "@/assets/actions/act-sail.png";
+import actCrew from "@/assets/actions/act-crew.png";
+import actSell from "@/assets/actions/act-sell.png";
 import { GameSprite } from "@/components/GameSprite";
 import { Button } from "@/components/ui/button";
 import { CREWS } from "@/lib/items";
 import { fmt } from "@/lib/ships";
 import { playSfx } from "@/lib/sound";
 
-type ShipState = "docked" | "sailingOut" | "casting" | "fishing" | "hauling" | "sailingHome" | "sold";
+type ShipState = "docked" | "sailingOut" | "turning" | "casting" | "fishing" | "hauling" | "sailingHome" | "sold";
 type FleetShip = { id: number; state: ShipState };
 type ShipStyle = CSSProperties & {
   "--ship-x": string;
   "--ship-y": string;
+  "--ship-travel": string;
   "--ship-delay": string;
-  "--sea-x": string;
-  "--sea-y": string;
-  "--sea-turn": string;
-  "--route-x": string;
-  "--route-y": string;
 };
 
 const initialFleet: FleetShip[] = [1, 2, 3].map((id) => ({ id, state: "docked" }));
-const positions = [
-  { x: "31%", y: "67%", seaX: "45%", seaY: "45%", routeX: "35%", routeY: "52%", turn: "-15deg", delay: "0ms" },
-  { x: "51%", y: "59%", seaX: "59%", seaY: "39%", routeX: "48%", routeY: "46%", turn: "-10deg", delay: "260ms" },
-  { x: "72%", y: "67%", seaX: "76%", seaY: "46%", routeX: "82%", routeY: "55%", turn: "-7deg", delay: "520ms" },
+
+/** One straight horizontal lane per ship — always over open water, never over the shore. */
+const lanes = [
+  { x: "50%", y: "57%", travel: "24%", delay: "0ms" },
+  { x: "39%", y: "68%", travel: "29%", delay: "240ms" },
+  { x: "41%", y: "79%", travel: "28%", delay: "480ms" },
 ];
 
 const shipFrames = [
@@ -37,6 +38,12 @@ const shipFrames = [
   { key: "submerged", src: shipSubmerged },
   { key: "haul", src: shipHaul },
 ] as const;
+
+/** States where the hull sits at the far end of its lane. */
+const atSea: ShipState[] = ["sailingOut", "turning", "casting", "fishing", "hauling"];
+/** States where the bow points back toward the shore. */
+const facingShore: ShipState[] = ["turning", "casting", "fishing", "hauling", "sailingHome"];
+const busyStates: ShipState[] = ["sailingOut", "turning", "casting", "hauling", "sailingHome"];
 
 export function FishingFleet() {
   const [ships, setShips] = useState(initialFleet);
@@ -81,8 +88,9 @@ export function FishingFleet() {
         return;
       }
       update(ship.id, "sailingOut");
-      later(() => update(ship.id, "casting"), 2350);
-      later(() => update(ship.id, "fishing"), 3550);
+      later(() => update(ship.id, "turning"), 2300);
+      later(() => update(ship.id, "casting"), 3150);
+      later(() => update(ship.id, "fishing"), 4600);
       return;
     }
     if (ship.state === "fishing") {
@@ -91,8 +99,8 @@ export function FishingFleet() {
         return;
       }
       update(ship.id, "hauling");
-      later(() => update(ship.id, "sailingHome"), 1250);
-      later(() => update(ship.id, "docked"), 3850);
+      later(() => update(ship.id, "sailingHome"), 1500);
+      later(() => update(ship.id, "docked"), 3900);
     }
   };
 
@@ -100,32 +108,37 @@ export function FishingFleet() {
     <div className={`fleet-layer ${assetsReady ? "fleet-ready" : ""}`} aria-label="أسطول الصيد" aria-busy={!assetsReady}>
       {ships.map((ship, index) => {
         if (ship.state === "sold") return null;
-        const pos = positions[index];
-        if (!pos) return null;
-        const busy = ship.state === "sailingOut" || ship.state === "casting" || ship.state === "hauling" || ship.state === "sailingHome";
+        const lane = lanes[index];
+        if (!lane) return null;
+        const busy = busyStates.includes(ship.state);
         const frame = ship.state === "casting" ? "cast" : ship.state === "fishing" ? "submerged" : ship.state === "hauling" ? "haul" : "idle";
         const style: ShipStyle = {
-          "--ship-x": pos.x,
-          "--ship-y": pos.y,
-          "--ship-delay": pos.delay,
-          "--sea-x": pos.seaX,
-          "--sea-y": pos.seaY,
-          "--sea-turn": pos.turn,
-          "--route-x": pos.routeX,
-          "--route-y": pos.routeY,
+          "--ship-x": lane.x,
+          "--ship-y": lane.y,
+          "--ship-travel": lane.travel,
+          "--ship-delay": lane.delay,
         };
+        const laneClasses = [
+          "fleet-ship",
+          `fleet-ship-${ship.state}`,
+          atSea.includes(ship.state) ? "fleet-ship-at-sea" : "",
+          ship.state === "sailingOut" || ship.state === "sailingHome" ? "fleet-ship-moving" : "",
+        ].filter(Boolean).join(" ");
         return (
-          <div key={ship.id} className={`fleet-ship fleet-ship-${ship.state}`} style={style}>
+          <div key={ship.id} className={laneClasses} style={style}>
             {selected === ship.id && !busy && (
               <div className="ship-actions" role="menu" aria-label={`أوامر السفينة ${ship.id}`}>
-                <Button variant="ghost" role="menuitem" onClick={() => sail(ship)} aria-label={ship.state === "docked" ? "الذهاب للصيد" : "العودة للميناء"} title={ship.state === "docked" ? "الذهاب للصيد" : "العودة للميناء"}>
-                  <img src="/img/act-dock.png" alt="" />
+                <Button variant="ghost" role="menuitem" className="ship-action" onClick={() => sail(ship)} title={ship.state === "docked" ? "الذهاب للصيد" : "العودة للميناء"}>
+                  <img src={actSail} alt="" />
+                  <span>{ship.state === "docked" ? "صيد" : "رجوع"}</span>
                 </Button>
-                <Button variant="ghost" role="menuitem" onClick={() => { setSelected(null); setCrewFor(ship.id); playSfx("click", 0.65); }} aria-label="تفقد الطاقم" title="تفقد الطاقم">
-                  <img src="/img/act-crew.png" alt="" />
+                <Button variant="ghost" role="menuitem" className="ship-action" onClick={() => { setSelected(null); setCrewFor(ship.id); playSfx("click", 0.65); }} title="تفقد الطاقم">
+                  <img src={actCrew} alt="" />
+                  <span>الطاقم</span>
                 </Button>
-                <Button variant="ghost" role="menuitem" onClick={() => { setSelected(null); setSellFor(ship.id); playSfx("click", 0.65); }} aria-label="بيع السفينة" title="بيع السفينة">
-                  <img src="/img/act-sail.png" alt="" />
+                <Button variant="ghost" role="menuitem" className="ship-action" onClick={() => { setSelected(null); setSellFor(ship.id); playSfx("click", 0.65); }} title="بيع السفينة">
+                  <img src={actSell} alt="" />
+                  <span>بيع</span>
                 </Button>
               </div>
             )}
@@ -137,18 +150,20 @@ export function FishingFleet() {
               onClick={() => { setSelected((current) => current === ship.id ? null : ship.id); playSfx("click", 0.6); }}
             >
               <span className="ship-water-shadow" />
-              <span className="ship-art" aria-hidden="true">
-                {shipFrames.map(({ key, src }) => (
-                  <img
-                    key={key}
-                    src={src}
-                    className={`ship-frame ${frame === key ? "ship-frame-active" : ""}`}
-                    alt=""
-                    width={1536}
-                    height={1024}
-                    draggable={false}
-                  />
-                ))}
+              <span className={`ship-flip ${facingShore.includes(ship.state) ? "ship-flip-turned" : ""}`} aria-hidden="true">
+                <span className="ship-bob">
+                  {shipFrames.map(({ key, src }) => (
+                    <img
+                      key={key}
+                      src={src}
+                      className={`ship-frame ${frame === key ? "ship-frame-active" : ""}`}
+                      alt=""
+                      width={1536}
+                      height={1024}
+                      draggable={false}
+                    />
+                  ))}
+                </span>
               </span>
               <span className="sr-only">سفينة الصيد {ship.id}</span>
               {ship.state === "fishing" && <span className="fishing-ripple" />}
@@ -182,7 +197,7 @@ function CrewPanel({ shipId, onClose }: { shipId: number; onClose: () => void })
       <section className="crew-panel" dir="rtl" onClick={(event) => event.stopPropagation()}>
         <header><span className="crew-title-mark" aria-hidden="true">⚓</span><h2>طاقم السفينة {shipId}</h2><Button variant="ghost" size="icon" onClick={onClose} aria-label="إغلاق"><X /></Button></header>
         <ul>
-          {CREWS.slice(0, 4).map((crew, index) => (
+          {CREWS.slice(0, 6).map((crew, index) => (
             <li key={crew.id}>
               <GameSprite atlas="crew" index={index} className="crew-portrait" />
               <span className="crew-copy"><strong>{crew.name}</strong><small>{crew.desc}</small></span>
