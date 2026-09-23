@@ -1,24 +1,50 @@
-import { useState } from "react";
-import { Check, Crown, Gem, Shield, ShipWheel, Swords, Users, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Check, Crown, Gem, Minus, Plus, Shield, ShipWheel, Swords, Users, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { GameSprite } from "@/components/GameSprite";
-import { CREWS, WEAPONS } from "@/lib/items";
+import { ARMORS, CREWS, GEM_PACKS, WEAPONS } from "@/lib/items";
 import { fmt, ships } from "@/lib/ships";
 import { currentPhase, phaseLabel, themes } from "@/lib/themes";
 import { playSfx } from "@/lib/sound";
 
-type StoreTab = "worlds" | "ships" | "weapons" | "crew" | "gems";
+type StoreTab = "gems" | "crew" | "weapons" | "armor" | "ships" | "worlds";
+type Product = {
+  id: string;
+  title: string;
+  desc: string;
+  price: number;
+  currency: "coin" | "gem";
+  art: React.ReactNode;
+};
+
+const sectionTitle: Record<StoreTab, string> = {
+  gems: "Gems",
+  crew: "Crew",
+  weapons: "Weapons",
+  armor: "Protection",
+  ships: "Ships",
+  worlds: "Worlds",
+};
 
 export function GameStore({ activeId, onSelect, onClose }: { activeId: string; onSelect: (id: string) => void; onClose: () => void }) {
-  const [tab, setTab] = useState<StoreTab>("worlds");
+  const [tab, setTab] = useState<StoreTab>("gems");
   const tabs = [
-    { id: "worlds" as const, label: "العوالم", icon: Crown },
-    { id: "ships" as const, label: "السفن", icon: ShipWheel },
-    { id: "weapons" as const, label: "الأسلحة", icon: Swords },
-    { id: "crew" as const, label: "الطواقم", icon: Users },
-    { id: "gems" as const, label: "الجواهر", icon: Gem },
+    { id: "gems" as const, label: "جواهر", icon: Gem },
+    { id: "crew" as const, label: "طواقم", icon: Users },
+    { id: "weapons" as const, label: "أسلحة", icon: Swords },
+    { id: "armor" as const, label: "حماية", icon: Shield },
+    { id: "ships" as const, label: "سفن", icon: ShipWheel },
+    { id: "worlds" as const, label: "عوالم", icon: Crown },
   ];
+
+  const products = useMemo<Product[]>(() => {
+    if (tab === "weapons") return WEAPONS.map((item, index) => ({ id: item.id, title: item.name, desc: `${item.desc} · قوة تدميرية ${item.power * 1000}`, price: item.price, currency: item.currency, art: <GameSprite atlas="weapon" index={index} /> }));
+    if (tab === "crew") return CREWS.map((item, index) => ({ id: item.id, title: item.name, desc: `${item.desc} · ${item.hours}H`, price: item.price, currency: item.currency, art: <GameSprite atlas="crew" index={index} /> }));
+    if (tab === "armor") return ARMORS.map((item, index) => ({ id: item.id, title: item.name, desc: `${item.desc} · دفاع ${item.defense * 500}`, price: item.price, currency: item.currency, art: <GameSprite atlas="armor" index={index} /> }));
+    if (tab === "ships") return ships.map((ship) => ({ id: ship.id, title: ship.name, desc: ship.desc, price: ship.price, currency: ship.currency, art: <img src={ship.img} alt="" loading="lazy" /> }));
+    return [];
+  }, [tab]);
 
   return (
     <div className="game-modal" role="dialog" aria-modal="true" aria-label="المتجر البحري" onClick={onClose}>
@@ -26,7 +52,7 @@ export function GameStore({ activeId, onSelect, onClose }: { activeId: string; o
         <header className="store-head">
           <div className="min-w-0">
             <p className="store-kicker">ميناء التجارة الملكي</p>
-            <h2>متجر القبطان</h2>
+            <h2>المتجر</h2>
           </div>
           <Button variant="ghost" size="icon" aria-label="إغلاق المتجر" onClick={onClose} className="store-close"><X /></Button>
         </header>
@@ -37,6 +63,7 @@ export function GameStore({ activeId, onSelect, onClose }: { activeId: string; o
             </Button>
           ))}
         </nav>
+        <p className="store-banner">{sectionTitle[tab]}</p>
         <div className="store-body">
           {tab === "worlds" && (
             <>
@@ -54,22 +81,62 @@ export function GameStore({ activeId, onSelect, onClose }: { activeId: string; o
               </ul>
             </>
           )}
-          {tab === "ships" && <ProductGrid items={ships.map((ship) => ({ id: ship.id, title: ship.name, desc: ship.desc, price: ship.price, currency: ship.currency, image: <img src={ship.img} alt="" loading="lazy" /> }))} />}
-          {tab === "weapons" && <ProductGrid items={WEAPONS.map((item, index) => ({ id: item.id, title: item.name, desc: `${item.desc} · قوة ${item.power}`, price: item.price, currency: item.currency, image: <GameSprite atlas="weapon" index={index} /> }))} />}
-          {tab === "crew" && <ProductGrid items={CREWS.map((item, index) => ({ id: item.id, title: item.name, desc: `${item.desc} · ${item.hours} ساعات`, price: item.price, currency: item.currency, image: <GameSprite atlas="crew" index={index} /> }))} />}
-          {tab === "gems" && <GemVault />}
+          {tab === "gems" && <GemPacks />}
+          {products.length > 0 && <ProductPicker key={tab} items={products} />}
         </div>
       </section>
     </div>
   );
 }
 
-type Product = { id: string; title: string; desc: string; price: number; currency: "coin" | "gem"; image: React.ReactNode };
-
-function ProductGrid({ items }: { items: Product[] }) {
-  return <ul className="store-grid">{items.map((item) => <li key={item.id} className="store-product"><span className="product-art">{item.image}</span><span className="product-copy"><strong>{item.title}</strong><small>{item.desc}</small></span><Button onClick={() => playSfx("click", 0.75)} className="product-buy"><img src={item.currency === "coin" ? "/img/coin.png" : "/img/gem.png"} alt="" />{item.price === 0 ? "مجاني" : fmt(item.price)}</Button></li>)}</ul>;
+function GemPacks() {
+  return (
+    <ul className="store-grid gem-grid">
+      {GEM_PACKS.map((pack, index) => (
+        <li key={pack.id} className="store-product gem-card">
+          <span className="product-art"><GameSprite atlas="gem" index={index} /></span>
+          <span className="product-copy">
+            <strong>{fmt(pack.gems)} جوهرة</strong>
+            <small>{pack.bonus > 0 ? `+${fmt(pack.bonus)} مكافأة · ` : ""}VIP +{pack.vip}</small>
+          </span>
+          <Button onClick={() => playSfx("click", 0.75)} className="product-buy">{pack.price}</Button>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
-function GemVault() {
-  return <div className="gem-vault"><Gem className="gem-vault-icon" /><h3>خزنة الجواهر</h3><p>احصل على الجواهر من المهام اليومية والمكافآت. باقات الشراء ستُفتح لاحقًا.</p><span><Shield /> عمليات آمنة ومحفوظة</span></div>;
+function ProductPicker({ items }: { items: Product[] }) {
+  const [pickedId, setPickedId] = useState(items[0]?.id ?? "");
+  const [qty, setQty] = useState(1);
+  const picked = items.find((item) => item.id === pickedId) ?? items[0];
+  if (!picked) return null;
+  const total = picked.price * qty;
+  return (
+    <>
+      <ul className="store-grid">
+        {items.map((item) => (
+          <li key={item.id}>
+            <Button variant="ghost" onClick={() => { setPickedId(item.id); setQty(1); playSfx("click", 0.5); }} className={item.id === picked.id ? "store-product item-card selected" : "store-product item-card"}>
+              <span className="product-art">{item.art}</span>
+              <span className="product-copy"><strong>{item.title}</strong><small>{item.desc}</small></span>
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <footer className="buy-bar">
+        <span className="buy-art">{picked.art}<small>x{qty}</small></span>
+        <span className="buy-copy"><strong>{picked.title}</strong><small>{picked.desc}</small></span>
+        <span className="buy-controls">
+          <Button variant="ghost" size="icon" aria-label="إنقاص" onClick={() => setQty((n) => Math.max(1, n - 1))}><Minus /></Button>
+          <b>{qty}</b>
+          <Button variant="ghost" size="icon" aria-label="زيادة" onClick={() => setQty((n) => Math.min(99, n + 1))}><Plus /></Button>
+        </span>
+        <Button className="product-buy buy-confirm" onClick={() => playSfx("click", 0.8)}>
+          <img src={picked.currency === "coin" ? "/img/coin.png" : "/img/gem.png"} alt="" />
+          {total === 0 ? "مجاني" : fmt(total)}
+        </Button>
+      </footer>
+    </>
+  );
 }

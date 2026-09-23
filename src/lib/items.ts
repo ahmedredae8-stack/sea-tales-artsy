@@ -42,3 +42,39 @@ export const CREWS: Crew[] = [
   { id: "fix-l", name: "مصلح كبير", desc: "إصلاح 80% من الضرر", hours: 4, price: 25_000, currency: "coin", icon: "/img/act-dock.png" },
   { id: "fix-legend", name: "مصلح أسطوري", desc: "إصلاح فوري كامل", hours: 1, price: 150, currency: "gem", icon: "/img/cat-crew.png" },
 ];
+
+/* ── Protection gear (drع / تحصين) and gem bundles ──────── */
+
+export type Armor = {
+  id: string;
+  name: string;
+  desc: string;
+  defense: number;
+  price: number;
+  currency: Currency;
+};
+
+export const ARMORS: Armor[] = [
+  { id: "shield-wood", name: "درع خشبي", desc: "يمتص ضربة صاروخ صغير", defense: 2, price: 3_000, currency: "coin" },
+  { id: "shield-iron", name: "درع حديدي", desc: "يقلّل الضرر بنسبة 35%", defense: 5, price: 15_000, currency: "coin" },
+  { id: "shield-gold", name: "درع ذهبي", desc: "يقلّل الضرر بنسبة 60%", defense: 8, price: 60_000, currency: "coin" },
+  { id: "tower-watch", name: "برج مراقبة", desc: "ينبّهك قبل الهجوم", defense: 4, price: 40, currency: "gem" },
+  { id: "sea-mine", name: "حقل ألغام", desc: "يضرّ المهاجم تلقائيًا", defense: 7, price: 95, currency: "gem" },
+  { id: "royal-barrier", name: "الحاجز الملكي", desc: "حصانة كاملة 12 ساعة", defense: 12, price: 260, currency: "gem" },
+];
+
+export type GemPack = {
+  id: string;
+  name: string;
+  gems: number;
+  bonus: number;
+  vip: number;
+  price: string;
+};
+
+export const GEM_PACKS: GemPack[] = [
+  { id: "pack-s", name: "كيس جواهر", gems: 800, bonus: 0, vip: 1, price: "4.99$" },
+  { id: "pack-m", name: "صندوق جواهر", gems: 2_500, bonus: 250, vip: 2, price: "14.99$" },
+  { id: "pack-l", name: "خزنة جواهر", gems: 10_000, bonus: 1_500, vip: 3, price: "49.99$" },
+  { id: "pack-xl", name: "كنز القبطان", gems: 20_000, bonus: 5_000, vip: 5, price: "99.99$" },
+];
