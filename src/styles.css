@@ -480,9 +480,9 @@
 
 @media (max-aspect-ratio: 3/4) {
   .fleet-ship { width: clamp(7.4rem, 31vw, 11.5rem); }
-  .fleet-ship:nth-child(1) { --ship-x: 23% !important; --ship-y: 67% !important; --sea-x: 37% !important; --sea-y: 47% !important; }
-  .fleet-ship:nth-child(2) { --ship-x: 50% !important; --ship-y: 57% !important; --sea-x: 55% !important; --sea-y: 36% !important; }
-  .fleet-ship:nth-child(3) { --ship-x: 77% !important; --ship-y: 67% !important; --sea-x: 73% !important; --sea-y: 47% !important; }
+  .fleet-ship:nth-child(1) { --ship-x: 50% !important; --ship-y: 57% !important; --ship-travel: 24% !important; }
+  .fleet-ship:nth-child(2) { --ship-x: 39% !important; --ship-y: 68% !important; --ship-travel: 29% !important; }
+  .fleet-ship:nth-child(3) { --ship-x: 41% !important; --ship-y: 79% !important; --ship-travel: 28% !important; }
   .game-dock { padding-inline: 0.2rem; }
   .ship-actions { gap: 0.15rem; }
   .crew-panel li { grid-template-columns: 3.8rem minmax(0, 1fr) auto; gap: 0.4rem; min-height: 4.7rem; }
