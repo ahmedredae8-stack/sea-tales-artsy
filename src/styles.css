@@ -1555,3 +1555,64 @@
   font-size: 0.67rem;
   color: oklch(0.9 0.02 250 / 0.55);
 }
+
+/* ── Store window ────────────────────────────────────────── */
+.game-modal { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; padding: 0.6rem; background: oklch(0.05 0.02 250 / 0.78); backdrop-filter: blur(6px); }
+.store-shell {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  width: min(100%, 34rem);
+  max-height: 92svh;
+  overflow: hidden;
+  border: 3px solid var(--gold-deep);
+  border-radius: 0.85rem;
+  background: linear-gradient(180deg, oklch(0.25 0.06 28), oklch(0.17 0.045 25));
+  box-shadow: 0 22px 60px oklch(0.03 0.02 250 / 0.9), inset 0 0 0 2px oklch(0.9 0.1 80 / 0.25);
+  color: oklch(0.97 0.02 90);
+  animation: crew-panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.store-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.6rem 0.8rem; border-bottom: 2px solid var(--gold-deep); background: linear-gradient(180deg, oklch(0.2 0.05 26), oklch(0.13 0.035 24)); }
+.store-kicker { font-size: 0.68rem; color: oklch(0.8 0.05 70); }
+.store-head h2 { font-size: 1.25rem; font-weight: 900; color: var(--gold); }
+.store-close { color: var(--gold); }
+.store-tabs { display: flex; flex-wrap: wrap; gap: 0.3rem; padding: 0.5rem 0.6rem 0.35rem; }
+.store-tab { flex: 1 1 4.6rem; height: auto; min-width: 0; padding: 0.4rem 0.3rem; border: 2px solid oklch(0.55 0.1 40); border-radius: 0.5rem 0.5rem 0 0; background: linear-gradient(180deg, oklch(0.3 0.06 30), oklch(0.2 0.05 28)); color: oklch(0.9 0.03 70); font-size: 0.78rem; font-weight: 800; }
+.store-tab svg { width: 0.95rem; height: 0.95rem; }
+.store-tab-active { border-color: var(--gold); background: linear-gradient(180deg, oklch(0.68 0.19 32), oklch(0.53 0.17 30)); color: oklch(0.99 0.01 90); box-shadow: 0 -3px 0 var(--gold) inset; }
+.store-banner { margin: 0 0.75rem 0.5rem; padding: 0.3rem; border: 2px solid var(--gold); border-radius: 0.4rem; background: linear-gradient(180deg, oklch(0.7 0.16 55), oklch(0.55 0.15 45)); color: oklch(0.99 0.01 90); font-weight: 900; letter-spacing: 0.06em; text-align: center; text-shadow: 0 1px 2px oklch(0.2 0.05 40 / 0.8); }
+.store-body { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 0.55rem; overflow: hidden; padding: 0 0.7rem 0.7rem; }
+.store-section-note { padding-bottom: 0.4rem; font-size: 0.72rem; color: oklch(0.83 0.04 70); text-align: center; }
+.store-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem; overflow: auto; padding: 0.1rem; }
+.gem-grid, .store-worlds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.store-product { display: grid !important; height: auto; gap: 0.25rem; padding: 0.4rem; border: 2px solid oklch(0.55 0.1 40); border-radius: 0.55rem; background: linear-gradient(180deg, oklch(0.27 0.055 28), oklch(0.19 0.045 26)); box-shadow: inset 0 0 12px oklch(0.05 0.02 30 / 0.6); text-align: center; white-space: normal; }
+.store-product:hover { border-color: var(--gold); background: linear-gradient(180deg, oklch(0.33 0.065 30), oklch(0.22 0.05 27)); }
+.store-product.selected { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-deep), 0 0 18px oklch(0.7 0.16 60 / 0.5); }
+.product-art { display: grid; place-items: center; aspect-ratio: 1; }
+.product-art > * { width: 100%; height: 100%; object-fit: contain; }
+.game-sprite { display: block; background-repeat: no-repeat; background-size: cover; }
+.product-copy { display: grid; gap: 0.05rem; min-width: 0; }
+.product-copy strong { font-size: 0.76rem; font-weight: 900; color: var(--gold); }
+.product-copy small { font-size: 0.6rem; line-height: 1.25; color: oklch(0.84 0.03 70); }
+.product-check { color: var(--gold); justify-self: center; }
+.world-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; overflow: hidden; border-radius: 0.35rem; }
+.world-preview img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.gem-card, .item-card { align-content: start; }
+.product-buy { justify-content: center; gap: 0.3rem; width: 100%; height: auto; padding: 0.35rem 0.5rem; border: 2px solid oklch(0.55 0.14 140); border-radius: 0.45rem; background: linear-gradient(180deg, oklch(0.78 0.18 145), oklch(0.56 0.16 142)); color: oklch(0.15 0.04 140); font-weight: 900; box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.45), 0 3px 0 oklch(0.38 0.1 140); }
+.product-buy img { width: 1.05rem; height: 1.05rem; }
+
+.buy-bar { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; padding: 0.5rem; border: 2px solid var(--gold); border-radius: 0.6rem; background: linear-gradient(180deg, oklch(0.24 0.055 28), oklch(0.15 0.04 26)); box-shadow: inset 0 0 14px oklch(0.05 0.02 30 / 0.7); }
+.buy-art { position: relative; display: grid; place-items: center; aspect-ratio: 1; }
+.buy-art > *:first-child { width: 100%; height: 100%; object-fit: contain; }
+.buy-art small { position: absolute; top: 0; inset-inline-start: 0; padding: 0 0.2rem; border-radius: 0.25rem; background: oklch(0.15 0.04 26 / 0.85); color: var(--gold); font-size: 0.62rem; font-weight: 900; }
+.buy-copy { display: grid; min-width: 0; }
+.buy-copy strong { font-size: 0.9rem; font-weight: 900; color: var(--gold); }
+.buy-copy small { font-size: 0.64rem; color: oklch(0.85 0.03 70); }
+.buy-controls { display: flex; grid-column: 1 / -1; align-items: center; justify-content: center; gap: 0.5rem; order: 3; }
+.buy-controls button { width: 1.9rem; height: 1.9rem; border: 2px solid var(--gold); border-radius: 50%; background: oklch(0.3 0.06 30); color: var(--gold); }
+.buy-controls b { min-width: 2rem; color: oklch(0.97 0.02 90); font-weight: 900; text-align: center; }
+.buy-confirm { grid-column: 1 / -1; order: 4; }
+
+@media (max-aspect-ratio: 3/4) {
+  .store-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .store-tab { flex-basis: 3.9rem; font-size: 0.7rem; }
+}
