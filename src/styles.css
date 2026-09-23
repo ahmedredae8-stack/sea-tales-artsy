@@ -504,11 +504,12 @@
   .dock-btn {
     animation: none;
   }
-  .fleet-ship, .fleet-ship-sailingOut, .fleet-ship-casting, .fleet-ship-fishing, .fleet-ship-hauling, .fleet-ship-sailingHome, .ship-art, .fishing-ripple { animation: none; transition: none; }
+  .fleet-ship, .ship-flip, .ship-bob, .fishing-ripple { animation: none; transition: none; }
 }
 
 .reduce-game-motion .fleet-ship,
-.reduce-game-motion .ship-art,
+.reduce-game-motion .ship-flip,
+.reduce-game-motion .ship-bob,
 .reduce-game-motion .fishing-ripple { animation: none !important; transition: none !important; }
 
 
