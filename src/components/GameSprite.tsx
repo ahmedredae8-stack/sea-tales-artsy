@@ -1,13 +1,17 @@
+import armorAtlas from "@/assets/armor-atlas.png";
 import captainsAtlas from "@/assets/captains-atlas.png";
 import crewAtlas from "@/assets/crew-atlas.png";
+import gemsAtlas from "@/assets/gems-atlas.png";
 import weaponsAtlas from "@/assets/weapons-atlas.png";
 
-type Atlas = "weapon" | "crew" | "captain";
+type Atlas = "weapon" | "crew" | "captain" | "armor" | "gem";
 
 const atlasData: Record<Atlas, { src: string; columns: number; rows: number }> = {
   weapon: { src: weaponsAtlas, columns: 3, rows: 2 },
   crew: { src: crewAtlas, columns: 3, rows: 3 },
   captain: { src: captainsAtlas, columns: 3, rows: 2 },
+  armor: { src: armorAtlas, columns: 3, rows: 2 },
+  gem: { src: gemsAtlas, columns: 2, rows: 2 },
 };
 
 export function GameSprite({ atlas, index, className = "" }: { atlas: Atlas; index: number; className?: string }) {
