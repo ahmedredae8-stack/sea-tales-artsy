@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      fleet_layout: {
+        Row: {
+          created_at: string
+          id: string
+          lanes: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          lanes?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lanes?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
