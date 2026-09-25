@@ -117,7 +117,7 @@ export function FleetCalibrator({ lanes, onChange, onTest }: Props) {
         grab.current = null;
       }}
     >
-      {lanes.map((lane, index) => (
+      {lanes.map((lane) => (
         <div key={lane.id} className="calib-lane" aria-hidden="true">
           <span
             className="calib-line"
