@@ -183,11 +183,15 @@
 /* The play-field keeps the scene's own proportions, so ships, HUD and dock
    always sit on exactly the same patch of water at any screen size. */
 .game-stage {
-  position: relative;
-  width: min(100vw, calc(100svh * 704 / 1504));
-  height: min(100svh, calc(100vw * 1504 / 704));
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 704px;
+  height: 1504px;
   overflow: hidden;
   container-type: size;
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
+  transform-origin: center center;
   box-shadow: 0 0 60px oklch(0 0 0 / 0.65);
 }
 
@@ -1526,7 +1530,9 @@
   letter-spacing: 0.3em;
 }
 
-.calib-layer { position: absolute; inset: 0; z-index: 60; }
+.calib-layer { position: absolute; inset: 0; z-index: 60; pointer-events: auto; }
+.calib-key { pointer-events: auto; }
+.calib-gate { pointer-events: auto; }
 .calib-lane { position: absolute; inset: 0; pointer-events: none; }
 .calib-line {
   position: absolute;

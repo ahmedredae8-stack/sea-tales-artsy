@@ -18,7 +18,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     let raf = 0;
     const t0 = performance.now();
-    const total = 4200;
+    const total = 1600;
 
     const loop = (t: number) => {
       const p = Math.min(100, ((t - t0) / total) * 100);
@@ -27,7 +27,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
       if (p < 100) raf = requestAnimationFrame(loop);
       else {
         setLeaving(true);
-        window.setTimeout(onDone, 900);
+        window.setTimeout(onDone, 420);
       }
     };
     raf = requestAnimationFrame(loop);

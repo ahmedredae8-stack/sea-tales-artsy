@@ -9,8 +9,10 @@ import actSail from "@/assets/actions/act-sail.png";
 import actCrew from "@/assets/actions/act-crew.png";
 import actSell from "@/assets/actions/act-sell.png";
 import { GameSprite } from "@/components/GameSprite";
+import { FleetCalibrator } from "@/components/FleetCalibrator";
 import { Button } from "@/components/ui/button";
 import { CREWS } from "@/lib/items";
+import { cachedLanes, fetchLanes, type Lane } from "@/lib/fleetLayout";
 import { fmt } from "@/lib/ships";
 import { playSfx } from "@/lib/sound";
 
@@ -19,18 +21,14 @@ type FleetShip = { id: number; state: ShipState };
 type ShipStyle = CSSProperties & {
   "--ship-x": string;
   "--ship-y": string;
-  "--ship-travel": string;
+  "--ship-size": string;
+  "--ship-dx": string;
+  "--ship-dy": string;
   "--ship-delay": string;
 };
 
 const initialFleet: FleetShip[] = [1, 2, 3].map((id) => ({ id, state: "docked" }));
-
-/** One straight horizontal lane per ship — always over open water, never over the shore. */
-const lanes = [
-  { x: "50%", y: "57%", travel: "24%", delay: "0ms" },
-  { x: "39%", y: "68%", travel: "29%", delay: "240ms" },
-  { x: "41%", y: "79%", travel: "28%", delay: "480ms" },
-];
+const delays = ["0ms", "240ms", "480ms"];
 
 const shipFrames = [
   { key: "idle", src: shipIdle },
@@ -47,6 +45,7 @@ const busyStates: ShipState[] = ["sailingOut", "turning", "casting", "hauling", 
 
 export function FishingFleet() {
   const [ships, setShips] = useState(initialFleet);
+  const [lanes, setLanes] = useState<Lane[]>(() => cachedLanes());
   const [assetsReady, setAssetsReady] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [crewFor, setCrewFor] = useState<number | null>(null);
@@ -63,6 +62,9 @@ export function FishingFleet() {
       }),
     ).then(() => {
       if (active) setAssetsReady(true);
+    });
+    void fetchLanes().then((published) => {
+      if (active) setLanes(published);
     });
     return () => {
       active = false;
@@ -104,6 +106,13 @@ export function FishingFleet() {
     }
   };
 
+  /** Owner tool preview: send every docked ship out on its new lane. */
+  const testSail = () => {
+    ships.forEach((ship, index) => {
+      if (ship.state === "docked") later(() => sail(ship), index * 260);
+    });
+  };
+
   return (
     <div className={`fleet-layer ${assetsReady ? "fleet-ready" : ""}`} aria-label="أسطول الصيد" aria-busy={!assetsReady}>
       {ships.map((ship, index) => {
@@ -113,10 +122,12 @@ export function FishingFleet() {
         const busy = busyStates.includes(ship.state);
         const frame = ship.state === "casting" ? "cast" : ship.state === "fishing" ? "submerged" : ship.state === "hauling" ? "haul" : "idle";
         const style: ShipStyle = {
-          "--ship-x": lane.x,
-          "--ship-y": lane.y,
-          "--ship-travel": lane.travel,
-          "--ship-delay": lane.delay,
+          "--ship-x": `${lane.dockX}%`,
+          "--ship-y": `${lane.dockY}%`,
+          "--ship-size": String(lane.size),
+          "--ship-dx": `calc(${(lane.fishX - lane.dockX).toFixed(2)} * 1cqw)`,
+          "--ship-dy": `calc(${(lane.fishY - lane.dockY).toFixed(2)} * 1cqh)`,
+          "--ship-delay": delays[index] ?? "0ms",
         };
         const laneClasses = [
           "fleet-ship",
@@ -171,6 +182,8 @@ export function FishingFleet() {
           </div>
         );
       })}
+
+      <FleetCalibrator lanes={lanes} onChange={setLanes} onTest={testSail} />
 
       {crewFor !== null && <CrewPanel shipId={crewFor} onClose={() => setCrewFor(null)} />}
       {sellFor !== null && (

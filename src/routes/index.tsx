@@ -12,6 +12,7 @@ import { QuestBoard } from "@/components/QuestBoard";
 import { BottomDock, type DockAction } from "@/components/BottomDock";
 import { FishingFleet } from "@/components/FishingFleet";
 import { usePlayer } from "@/hooks/usePlayer";
+import { useStageScale } from "@/hooks/useStageScale";
 import { saveThemeToAccount } from "@/lib/player";
 import { isMuted, playAmbient, playSfx, setMuted, stopAllSounds } from "@/lib/sound";
 import { FishMarket } from "@/routes/fish-market";
@@ -57,6 +58,7 @@ export const Route = createFileRoute("/")({
 type Win = "chat" | "settings" | "fish" | "ship" | "trade-fish" | "trade-ship" | null;
 
 function Index() {
+  const stageHost = useStageScale();
   const navigate = useNavigate();
   const { player } = usePlayer();
   const [sound, setSound] = useState(true);
@@ -126,7 +128,11 @@ function Index() {
   };
 
   return (
-    <main className="relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-[oklch(0.15_0.04_250)]">
+    <div className="game-root" ref={stageHost}>
+      {/* Soft bleed so wide screens never show bare black bars */}
+      <img src={scene.poster} alt="" aria-hidden="true" className="stage-backdrop" />
+
+      <main className="game-stage relative overflow-hidden bg-[oklch(0.15_0.04_250)]">
       {/* Living scene: a looping video shot of the bay, cropped to always cover */}
       <div className="scene-stage">
         <video
@@ -229,6 +235,7 @@ function Index() {
       {!intro && <DailyReward />}
 
       {intro && <IntroLoader onDone={finishIntro} />}
-    </main>
+      </main>
+    </div>
   );
 }
