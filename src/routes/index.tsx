@@ -233,6 +233,7 @@ function Index() {
       {!intro && <DailyReward />}
 
       {intro && <IntroLoader onDone={finishIntro} />}
-    </main>
+      </main>
+    </div>
   );
 }
