@@ -63,6 +63,9 @@ export function FishingFleet() {
     ).then(() => {
       if (active) setAssetsReady(true);
     });
+    void fetchLanes().then((published) => {
+      if (active) setLanes(published);
+    });
     return () => {
       active = false;
       timers.current.forEach((timer) => window.clearTimeout(timer));
