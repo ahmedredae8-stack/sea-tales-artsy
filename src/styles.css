@@ -184,10 +184,13 @@
    always sit on exactly the same patch of water at any screen size. */
 .game-stage {
   position: relative;
-  width: min(100vw, calc(100svh * 704 / 1504));
-  height: min(100svh, calc(100vw * 1504 / 704));
+  flex: none;
+  width: 704px;
+  height: 1504px;
   overflow: hidden;
   container-type: size;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: center center;
   box-shadow: 0 0 60px oklch(0 0 0 / 0.65);
 }
 
