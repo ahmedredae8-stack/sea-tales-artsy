@@ -57,6 +57,7 @@ export const Route = createFileRoute("/")({
 type Win = "chat" | "settings" | "fish" | "ship" | "trade-fish" | "trade-ship" | null;
 
 function Index() {
+  const stageHost = useStageScale();
   const navigate = useNavigate();
   const { player } = usePlayer();
   const [sound, setSound] = useState(true);
