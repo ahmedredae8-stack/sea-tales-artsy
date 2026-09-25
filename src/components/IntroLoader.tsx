@@ -27,7 +27,7 @@ export function IntroLoader({ onDone }: { onDone: () => void }) {
       if (p < 100) raf = requestAnimationFrame(loop);
       else {
         setLeaving(true);
-        window.setTimeout(onDone, 900);
+        window.setTimeout(onDone, 420);
       }
     };
     raf = requestAnimationFrame(loop);
