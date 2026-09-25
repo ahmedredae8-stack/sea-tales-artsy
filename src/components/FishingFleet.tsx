@@ -122,10 +122,12 @@ export function FishingFleet() {
         const busy = busyStates.includes(ship.state);
         const frame = ship.state === "casting" ? "cast" : ship.state === "fishing" ? "submerged" : ship.state === "hauling" ? "haul" : "idle";
         const style: ShipStyle = {
-          "--ship-x": lane.x,
-          "--ship-y": lane.y,
-          "--ship-travel": lane.travel,
-          "--ship-delay": lane.delay,
+          "--ship-x": `${lane.dockX}%`,
+          "--ship-y": `${lane.dockY}%`,
+          "--ship-size": String(lane.size),
+          "--ship-dx": `calc(${(lane.fishX - lane.dockX).toFixed(2)} * 1cqw)`,
+          "--ship-dy": `calc(${(lane.fishY - lane.dockY).toFixed(2)} * 1cqh)`,
+          "--ship-delay": delays[index] ?? "0ms",
         };
         const laneClasses = [
           "fleet-ship",
