@@ -183,6 +183,8 @@ export function FishingFleet() {
         );
       })}
 
+      <FleetCalibrator lanes={lanes} onChange={setLanes} onTest={testSail} />
+
       {crewFor !== null && <CrewPanel shipId={crewFor} onClose={() => setCrewFor(null)} />}
       {sellFor !== null && (
         <div className="fleet-modal" role="dialog" aria-modal="true" aria-label="بيع السفينة" onClick={() => setSellFor(null)}>
