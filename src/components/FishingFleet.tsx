@@ -106,6 +106,13 @@ export function FishingFleet() {
     }
   };
 
+  /** Owner tool preview: send every docked ship out on its new lane. */
+  const testSail = () => {
+    ships.forEach((ship, index) => {
+      if (ship.state === "docked") later(() => sail(ship), index * 260);
+    });
+  };
+
   return (
     <div className={`fleet-layer ${assetsReady ? "fleet-ready" : ""}`} aria-label="أسطول الصيد" aria-busy={!assetsReady}>
       {ships.map((ship, index) => {
