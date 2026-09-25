@@ -45,6 +45,7 @@ const busyStates: ShipState[] = ["sailingOut", "turning", "casting", "hauling", 
 
 export function FishingFleet() {
   const [ships, setShips] = useState(initialFleet);
+  const [lanes, setLanes] = useState<Lane[]>(() => cachedLanes());
   const [assetsReady, setAssetsReady] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [crewFor, setCrewFor] = useState<number | null>(null);
