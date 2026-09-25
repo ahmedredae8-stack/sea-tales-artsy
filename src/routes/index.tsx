@@ -126,7 +126,11 @@ function Index() {
   };
 
   return (
-    <main className="relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-[oklch(0.15_0.04_250)]">
+    <div className="game-root" ref={stageHost}>
+      {/* Soft bleed so wide screens never show bare black bars */}
+      <img src={scene.poster} alt="" aria-hidden="true" className="stage-backdrop" />
+
+      <main className="game-stage relative overflow-hidden bg-[oklch(0.15_0.04_250)]">
       {/* Living scene: a looping video shot of the bay, cropped to always cover */}
       <div className="scene-stage">
         <video
