@@ -1529,7 +1529,9 @@
   letter-spacing: 0.3em;
 }
 
-.calib-layer { position: absolute; inset: 0; z-index: 60; }
+.calib-layer { position: absolute; inset: 0; z-index: 60; pointer-events: auto; }
+.calib-key { pointer-events: auto; }
+.calib-gate { pointer-events: auto; }
 .calib-lane { position: absolute; inset: 0; pointer-events: none; }
 .calib-line {
   position: absolute;
