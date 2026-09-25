@@ -183,13 +183,14 @@
 /* The play-field keeps the scene's own proportions, so ships, HUD and dock
    always sit on exactly the same patch of water at any screen size. */
 .game-stage {
-  position: relative;
-  flex: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: 704px;
   height: 1504px;
   overflow: hidden;
   container-type: size;
-  transform: scale(var(--stage-scale, 1));
+  transform: translate(-50%, -50%) scale(var(--stage-scale, 1));
   transform-origin: center center;
   box-shadow: 0 0 60px oklch(0 0 0 / 0.65);
 }
