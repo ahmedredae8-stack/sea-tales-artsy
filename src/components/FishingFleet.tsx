@@ -9,8 +9,10 @@ import actSail from "@/assets/actions/act-sail.png";
 import actCrew from "@/assets/actions/act-crew.png";
 import actSell from "@/assets/actions/act-sell.png";
 import { GameSprite } from "@/components/GameSprite";
+import { FleetCalibrator } from "@/components/FleetCalibrator";
 import { Button } from "@/components/ui/button";
 import { CREWS } from "@/lib/items";
+import { cachedLanes, fetchLanes, type Lane } from "@/lib/fleetLayout";
 import { fmt } from "@/lib/ships";
 import { playSfx } from "@/lib/sound";
 
@@ -19,18 +21,14 @@ type FleetShip = { id: number; state: ShipState };
 type ShipStyle = CSSProperties & {
   "--ship-x": string;
   "--ship-y": string;
-  "--ship-travel": string;
+  "--ship-size": string;
+  "--ship-dx": string;
+  "--ship-dy": string;
   "--ship-delay": string;
 };
 
 const initialFleet: FleetShip[] = [1, 2, 3].map((id) => ({ id, state: "docked" }));
-
-/** One straight horizontal lane per ship — always over open water, never over the shore. */
-const lanes = [
-  { x: "50%", y: "57%", travel: "24%", delay: "0ms" },
-  { x: "39%", y: "68%", travel: "29%", delay: "240ms" },
-  { x: "41%", y: "79%", travel: "28%", delay: "480ms" },
-];
+const delays = ["0ms", "240ms", "480ms"];
 
 const shipFrames = [
   { key: "idle", src: shipIdle },
